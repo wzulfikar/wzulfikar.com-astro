@@ -118,12 +118,7 @@ const { title, description, image = "/nano.png" } = Astro.props;
 
   function animate() {
     const animateElements = document.querySelectorAll(".animate");
-
-    animateElements.forEach((element, index) => {
-      setTimeout(() => {
-        element.classList.add("show");
-      }, index * 150);
-    });
+    animateElements.forEach((element) => element.classList.add("show"));
   }
 
   function onScroll() {

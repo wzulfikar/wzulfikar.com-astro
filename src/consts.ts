@@ -38,8 +38,8 @@ export const SOCIALS: Socials = [
     NAME: "github",
     HREF: "https://github.com/wzulfikar",
   },
-  {
-    NAME: "linkedin",
-    HREF: "https://fi.linkedin.com/in/wildan-zulfikar-30a30a100",
-  },
+  // {
+  //   NAME: "linkedin",
+  //   HREF: "https://fi.linkedin.com/in/wildan-zulfikar-30a30a100",
+  // },
 ];
