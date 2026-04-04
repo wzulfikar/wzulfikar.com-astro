@@ -104,32 +104,37 @@ const { images } = Astro.props;
 </style>
 
 <script>
-  const lightbox = document.getElementById('img-lightbox')!;
-  const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement;
+  function initLightbox() {
+    const lightbox = document.getElementById('img-lightbox')!;
+    const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement;
 
-  function openLightbox(img: HTMLImageElement) {
-    lbImg.src = img.src;
-    lbImg.alt = img.alt;
-    lightbox.classList.add('open');
+    function openLightbox(img: HTMLImageElement) {
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.replace('open', 'closing');
+      lightbox.addEventListener('animationend', () => {
+        lightbox.classList.remove('closing');
+      }, { once: true });
+    }
+
+    document.querySelectorAll('article p img').forEach(img => {
+      (img as HTMLElement).addEventListener('click', () => openLightbox(img as HTMLImageElement));
+    });
+
+    document.querySelectorAll<HTMLImageElement>('[data-lightbox]').forEach(img => {
+      img.addEventListener('click', () => openLightbox(img));
+    });
+
+    lightbox.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
   }
 
-  document.querySelectorAll('article p img').forEach(img => {
-    (img as HTMLElement).addEventListener('click', () => openLightbox(img as HTMLImageElement));
-  });
-
-  document.querySelectorAll<HTMLImageElement>('[data-lightbox]').forEach(img => {
-    img.addEventListener('click', () => openLightbox(img));
-  });
-
-  function closeLightbox() {
-    lightbox.classList.replace('open', 'closing');
-    lightbox.addEventListener('animationend', () => {
-      lightbox.classList.remove('closing');
-    }, { once: true });
-  }
-
-  lightbox.addEventListener('click', closeLightbox);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
-  });
+  document.addEventListener('astro:after-swap', initLightbox);
+  initLightbox();
 </script>
