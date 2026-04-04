@@ -27,7 +27,7 @@ const { Content } = await entry.render();
     <div class="animate">
       <Breadcrumb section="show" href="/show" />
     </div>
-    <div class="space-y-1 my-10">
+    <div class="space-y-1 mt-10 mb-7">
       <div class="animate flex items-center gap-1.5">
         <div class="font-base text-sm">
           <FormattedDate date={entry.data.date} />
@@ -42,11 +42,11 @@ const { Content } = await entry.render();
       </div>
       {(entry.data.demoURL || entry.data.repoURL) && (
         <nav class="animate flex gap-1">
-          {entry.data.demoURL && (
+          {entry.data.demoURL ? (
             <Link href={entry.data.demoURL} external>
-              demo
+                demo {entry.data.demoURL.startsWith("https://x.com/") ? '(x.com)' :'' }
             </Link>
-          )}
+          ):null}
           {entry.data.demoURL && entry.data.repoURL && (
             <span>/</span>
           )}
