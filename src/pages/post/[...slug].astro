@@ -25,7 +25,7 @@ const { Content } = await post.render();
 <PageLayout title={post.data.title} description={post.data.description}>
   <Container>
     <div class="animate">
-      <Breadcrumb section="post" href="/post" />
+      <Breadcrumb section="post" href="/post" trailingSlash />
     </div>
     <div class="space-y-1 mt-10 mb-8">
       <div class="animate flex items-center gap-1.5">

@@ -1,5 +1,5 @@
 ---
-title: "trigger.dev is the right tool for user-created monitoring"
+title: "Trigger.dev is the right tool for user-created monitoring"
 description: "Comparing Cloudflare Cron, Cloudflare Queue, and trigger.dev — and why trigger.dev wins for monitoring systems created by your users."
 date: "Apr 04 2026"
 ---
@@ -59,12 +59,12 @@ When the user deletes or pauses their monitor, you call `schedules.del()`. When 
 
 ## The mental model
 
-| | Cloudflare Cron | Cloudflare Queue | trigger.dev |
-|---|---|---|---|
-| Schedule defined by | Developer at deploy time | You build it yourself | Developer at runtime via API |
-| Dynamic user schedules | No | Manual plumbing | Yes, first-class |
-| Retry/observability | Basic | Manual | Built-in |
-| Scales with user count | No | With effort | Yes |
+|                        | Cloudflare Cron          | Cloudflare Queue      | trigger.dev                  |
+| ---------------------- | ------------------------ | --------------------- | ---------------------------- |
+| Schedule defined by    | Developer at deploy time | You build it yourself | Developer at runtime via API |
+| Dynamic user schedules | No                       | Manual plumbing       | Yes, first-class             |
+| Retry/observability    | Basic                    | Manual                | Built-in                     |
+| Scales with user count | No                       | With effort           | Yes                          |
 
 Cloudflare Cron is for _your_ recurring tasks. Cloudflare Queue is a building block. trigger.dev is the right abstraction when your users are the ones defining what runs and when.
 
