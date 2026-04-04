@@ -6,7 +6,7 @@ import ArrowCard from "@components/ArrowCard.astro";
 import Link from "@components/Link.astro";
 import { SITE, HOME, SOCIALS } from "@consts";
 
-const allBlog = (await getCollection("blog"))
+const allBlog = (await getCollection("post"))
   .filter(post => !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const blog = allBlog.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);

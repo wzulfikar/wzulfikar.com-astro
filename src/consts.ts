@@ -4,28 +4,29 @@ export const SITE: Site = {
   NAME: "wzulfikar",
   EMAIL: "hey@wzulfikar.com",
   NUM_POSTS_ON_HOMEPAGE: 3,
-  NUM_SHOWS_ON_HOMEPAGE: 3,
+  NUM_SHOWS_ON_HOMEPAGE: 2,
   NUM_SNOWBALLS_ON_HOMEPAGE: 3,
 };
 
 export const HOME: Metadata = {
   TITLE: "Home",
-  DESCRIPTION: "Wildan's personal site — blog, show, and snowball.",
+  DESCRIPTION: "Astro Nano is a minimal and lightweight blog and portfolio.",
 };
 
-export const BLOG: Metadata = {
-  TITLE: "Blog",
-  DESCRIPTION: "Essays and bursts of thought.",
+export const POST: Metadata = {
+  TITLE: "Post",
+  DESCRIPTION: "A collection of articles on topics I am passionate about.",
 };
 
 export const SHOW: Metadata = {
   TITLE: "Show",
-  DESCRIPTION: "Recent things I've built and shipped.",
+  DESCRIPTION: "Where I have worked and what I have done.",
 };
 
 export const SNOWBALL: Metadata = {
   TITLE: "Snowball",
-  DESCRIPTION: "Patterns, techniques, and tools worth investing in — transferable, compounding knowledge.",
+  DESCRIPTION:
+    "A collection of my projects, with links to repositories and demos.",
 };
 
 export const SOCIALS: Socials = [
@@ -37,4 +38,8 @@ export const SOCIALS: Socials = [
     NAME: "github",
     HREF: "https://github.com/wzulfikar",
   },
+  // {
+  //   NAME: "linkedin",
+  //   HREF: "https://fi.linkedin.com/in/wildan-zulfikar-30a30a100",
+  // },
 ];
