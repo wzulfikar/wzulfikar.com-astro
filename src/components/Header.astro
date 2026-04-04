@@ -1,6 +1,7 @@
 ---
 import Container from "@components/Container.astro";
 import Link from "@components/Link.astro";
+import ThemeToggle from "@components/ThemeToggle.astro";
 import { SITE } from "@consts";
 ---
 
@@ -13,8 +14,8 @@ import { SITE } from "@consts";
         </div>
       </Link>
       <nav class="flex gap-1">
-        <Link href="/blog">
-          blog
+        <Link href="/posts">
+        post
         </Link>
         <span>
           {`/`}
@@ -28,6 +29,8 @@ import { SITE } from "@consts";
         <Link href="/snowball">
             snowball
         </Link>
+        <span class="mx-1">·</span>
+        <ThemeToggle iconOnly />
       </nav>
     </div>
   </Container>
