@@ -30,8 +30,8 @@ const cover = "cover" in entry.data ? entry.data.cover : undefined;
     </div>
   </div>
   {cover && (
-    <div class="flex-shrink-0 ml-3 self-center">
-      <Image src={cover} alt="" width={48} height={64} class="rounded object-cover w-12 h-16" />
+    <div class="flex-shrink-0 ml-3 self-center max-w-[50px] h-16 overflow-hidden rounded">
+      <Image src={cover} alt="" height={64} class="object-cover w-full h-full" />
     </div>
   )}
   <svg
