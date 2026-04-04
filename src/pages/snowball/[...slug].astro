@@ -1,0 +1,49 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import { readingTime } from "@lib/utils";
+import BackToPrev from "@components/BackToPrev.astro";
+
+export async function getStaticPaths() {
+  const entries = (await getCollection("snowball"))
+    .filter(entry => !entry.data.draft)
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: entry,
+  }));
+}
+type Props = CollectionEntry<"snowball">;
+
+const entry = Astro.props;
+const { Content } = await entry.render();
+---
+
+<PageLayout title={entry.data.title} description={entry.data.description}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/snowball">
+        Back to snowball
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate flex items-center gap-1.5">
+        <div class="font-base text-sm">
+          <FormattedDate date={entry.data.date} />
+        </div>
+        &bull;
+        <div class="font-base text-sm">
+          {readingTime(entry.body)}
+        </div>
+      </div>
+      <div class="animate text-2xl font-semibold text-black dark:text-white">
+        {entry.data.title}
+      </div>
+    </div>
+    <article class="animate">
+      <Content />
+    </article>
+  </Container>
+</PageLayout>

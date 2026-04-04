@@ -87,23 +87,20 @@ const { title, description, image = "/nano.png" } = Astro.props;
     const backToPrev = document.getElementById("back-to-prev");
     backToPrev?.addEventListener("click", () => window.history.back());
 
-    const lightThemeButton = document.getElementById("light-theme-button");
-    lightThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "light");
-      toggleTheme(false);
+    const themeToggleButton = document.getElementById("theme-toggle-button");
+    themeToggleButton?.addEventListener("click", () => {
+      const current = localStorage.theme || "system";
+      const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
+      localStorage.setItem("theme", next);
+      if (next === "system") {
+        toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      } else {
+        toggleTheme(next === "dark");
+      }
+      updateThemeToggleUI(next);
     });
 
-    const darkThemeButton = document.getElementById("dark-theme-button");
-    darkThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "dark");
-      toggleTheme(true);
-    });
-
-    const systemThemeButton = document.getElementById("system-theme-button");
-    systemThemeButton?.addEventListener("click", () => {
-      localStorage.setItem("theme", "system");
-      toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    });
+    updateThemeToggleUI(localStorage.theme || "system");
 
     window.matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", event => {
@@ -163,6 +160,29 @@ function toggleTheme(dark) {
 
   window.getComputedStyle(css).opacity;
     document.head.removeChild(css);
+  }
+
+  function updateThemeToggleUI(theme) {
+    const label = document.getElementById("theme-toggle-label");
+    const iconLight = document.getElementById("theme-icon-light");
+    const iconDark = document.getElementById("theme-icon-dark");
+    const iconSystem = document.getElementById("theme-icon-system");
+    if (!label || !iconLight || !iconDark || !iconSystem) return;
+
+    iconLight.classList.add("hidden");
+    iconDark.classList.add("hidden");
+    iconSystem.classList.add("hidden");
+
+    if (theme === "light") {
+      label.textContent = "Light";
+      iconLight.classList.remove("hidden");
+    } else if (theme === "dark") {
+      label.textContent = "Dark";
+      iconDark.classList.remove("hidden");
+    } else {
+      label.textContent = "System";
+      iconSystem.classList.remove("hidden");
+    }
   }
 
   function preloadTheme() {
