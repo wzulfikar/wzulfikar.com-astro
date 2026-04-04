@@ -5,6 +5,7 @@ import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
 import Breadcrumb from "@components/Breadcrumb.astro";
+import LightboxImages from "@components/LightboxImages.astro";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("post"))
@@ -43,5 +44,6 @@ const { Content } = await post.render();
     <article class="animate">
       <Content />
     </article>
+    <LightboxImages />
   </Container>
 </PageLayout>
