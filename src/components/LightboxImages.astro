@@ -105,8 +105,9 @@ const { images } = Astro.props;
 
 <script>
   function initLightbox() {
-    const lightbox = document.getElementById('img-lightbox')!;
-    const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement;
+    const lightbox = document.getElementById('img-lightbox');
+    const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement | null;
+    if (!lightbox || !lbImg) return;
 
     function openLightbox(img: HTMLImageElement) {
       lbImg.src = img.src;
