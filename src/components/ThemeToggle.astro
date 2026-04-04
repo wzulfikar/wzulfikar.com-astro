@@ -1,4 +1,8 @@
 ---
+import Sun from "@lucide/astro/icons/sun";
+import Moon from "@lucide/astro/icons/moon";
+import SunMoon from "@lucide/astro/icons/sun-moon";
+
 interface Props {
   iconOnly?: boolean;
 }
@@ -12,67 +16,9 @@ const { iconOnly = false } = Astro.props;
 >
   {!iconOnly && <span id="theme-toggle-label">System</span>}
   <!-- Sun icon (light) -->
-  <svg
-    id="theme-icon-light"
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="hidden"
-  >
-    <circle cx="12" cy="12" r="4"/>
-    <path d="M12 2v2"/>
-    <path d="M12 20v2"/>
-    <path d="m4.93 4.93 1.41 1.41"/>
-    <path d="m17.66 17.66 1.41 1.41"/>
-    <path d="M2 12h2"/>
-    <path d="M20 12h2"/>
-    <path d="m6.34 17.66-1.41 1.41"/>
-    <path d="m19.07 4.93-1.41 1.41"/>
-  </svg>
+  <Sun id="theme-icon-light" size={16} stroke-width={1.5} class="hidden" />
   <!-- Moon icon (dark) -->
-  <svg
-    id="theme-icon-dark"
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="hidden"
-  >
-    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-  </svg>
+  <Moon id="theme-icon-dark" size={16} stroke-width={1.5} class="hidden" />
   <!-- SunMoon icon (system) -->
-  <svg
-    id="theme-icon-system"
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="hidden"
-  >
-    <path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/>
-    <path d="M12 2v2"/>
-    <path d="M12 20v2"/>
-    <path d="m4.9 4.9 1.4 1.4"/>
-    <path d="m17.7 17.7 1.4 1.4"/>
-    <path d="M2 12h2"/>
-    <path d="M20 12h2"/>
-    <path d="m6.3 17.7-1.4 1.4"/>
-    <path d="m19.1 4.9-1.4 1.4"/>
-  </svg>
+  <SunMoon id="theme-icon-system" size={16} stroke-width={1.5} class="hidden" />
 </button>
