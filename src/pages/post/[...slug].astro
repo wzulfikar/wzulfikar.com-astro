@@ -4,10 +4,10 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
-import Breadcrumb from "@components/Breadcrumb.astro";
+import BackToPrev from "@components/BackToPrev.astro";
 
 export async function getStaticPaths() {
-  const posts = (await getCollection("blog"))
+  const posts = (await getCollection("post"))
     .filter(post => !post.data.draft)
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
   return posts.map((post) => ({
@@ -15,7 +15,7 @@ export async function getStaticPaths() {
     props: post,
   }));
 }
-type Props = CollectionEntry<"blog">;
+type Props = CollectionEntry<"post">;
 
 const post = Astro.props;
 const { Content } = await post.render();
@@ -24,7 +24,9 @@ const { Content } = await post.render();
 <PageLayout title={post.data.title} description={post.data.description}>
   <Container>
     <div class="animate">
-      <Breadcrumb section="post" href="/post" />
+      <BackToPrev href="/post">
+        Back to post
+      </BackToPrev>
     </div>
     <div class="space-y-1 my-10">
       <div class="animate flex items-center gap-1.5">

@@ -3,21 +3,21 @@ import { getCollection } from "astro:content";
 import { HOME } from "@consts";
 
 type Context = {
-  site: string
-}
+  site: string;
+};
 
 export async function GET(context: Context) {
-  const blog = (await getCollection("blog"))
-    .filter(post => !post.data.draft);
+  const posts = (await getCollection("post")).filter(
+    (post) => !post.data.draft,
+  );
 
-  const show = (await getCollection("show"))
-    .filter(entry => !entry.data.draft);
+  const snowballs = (await getCollection("snowball")).filter(
+    (project) => !project.data.draft,
+  );
 
-  const snowball = (await getCollection("snowball"))
-    .filter(entry => !entry.data.draft);
-
-  const items = [...blog, ...show, ...snowball]
-    .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+  const items = [...posts, ...snowballs].sort(
+    (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf(),
+  );
 
   return rss({
     title: HOME.TITLE,
