@@ -87,7 +87,7 @@ const { title, description, image = "/nano.png" } = Astro.props;
     const backToPrev = document.getElementById("back-to-prev");
     backToPrev?.addEventListener("click", () => window.history.back());
 
-    const themeToggleButton = document.getElementById("theme-toggle-button");
+    document.querySelectorAll("#theme-toggle-button").forEach((themeToggleButton) => {
     themeToggleButton?.addEventListener("click", () => {
       const current = localStorage.theme || "system";
       const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
@@ -98,6 +98,7 @@ const { title, description, image = "/nano.png" } = Astro.props;
         toggleTheme(next === "dark");
       }
       updateThemeToggleUI(next);
+    });
     });
 
     updateThemeToggleUI(localStorage.theme || "system");
@@ -163,26 +164,12 @@ function toggleTheme(dark) {
   }
 
   function updateThemeToggleUI(theme) {
-    const label = document.getElementById("theme-toggle-label");
-    const iconLight = document.getElementById("theme-icon-light");
-    const iconDark = document.getElementById("theme-icon-dark");
-    const iconSystem = document.getElementById("theme-icon-system");
-    if (!label || !iconLight || !iconDark || !iconSystem) return;
-
-    iconLight.classList.add("hidden");
-    iconDark.classList.add("hidden");
-    iconSystem.classList.add("hidden");
-
-    if (theme === "light") {
-      label.textContent = "Light";
-      iconLight.classList.remove("hidden");
-    } else if (theme === "dark") {
-      label.textContent = "Dark";
-      iconDark.classList.remove("hidden");
-    } else {
-      label.textContent = "System";
-      iconSystem.classList.remove("hidden");
-    }
+    document.querySelectorAll("#theme-toggle-label").forEach((label) => {
+      label.textContent = theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System";
+    });
+    document.querySelectorAll("#theme-icon-light").forEach((el) => el.classList.toggle("hidden", theme !== "light"));
+    document.querySelectorAll("#theme-icon-dark").forEach((el) => el.classList.toggle("hidden", theme !== "dark"));
+    document.querySelectorAll("#theme-icon-system").forEach((el) => el.classList.toggle("hidden", theme !== "system"));
   }
 
   function preloadTheme() {
