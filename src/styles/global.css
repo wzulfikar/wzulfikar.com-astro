@@ -39,9 +39,8 @@ html.theme-transitioning *::after {
 }
 
 header {
-  @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-[#eeece1]/75 dark:bg-black/25;
-  @apply backdrop-blur-sm saturate-200;
+  @apply fixed top-0 left-0 right-0 z-50 pt-4 pb-10;
+  @apply bg-transparent;
   transition: background-color 0.4s ease;
 }
 

@@ -6,28 +6,33 @@ import { SITE } from "@consts";
 ---
 
 <header>
+  <!-- gradient: strong at top, fades to transparent at bottom -->
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style="background: linear-gradient(to bottom, var(--header-bg-start) 0%, var(--header-bg-mid) 55%, transparent 100%);"
+  ></div>
   <Container>
-    <div class="flex flex-wrap gap-y-2 justify-between">
+    <div class="relative flex flex-wrap gap-y-2 justify-between items-center">
       <Link href="/" underline={false}>
-        <div class="font-semibold">
+        <div class="font-semibold px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-sm text-black dark:text-white">
           {SITE.NAME}
         </div>
       </Link>
-      <nav class="flex gap-1">
+      <nav class="flex gap-1 items-center px-3 py-1 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-sm">
         <Link href="/posts">
-        post
+          post
         </Link>
         <span>
           {`/`}
         </span>
         <Link href="/show">
-            show
+          show
         </Link>
         <span>
           {`/`}
         </span>
         <Link href="/snowball">
-            snowball
+          snowball
         </Link>
         <span class="mx-1">·</span>
         <ThemeToggle iconOnly />
@@ -35,3 +40,14 @@ import { SITE } from "@consts";
     </div>
   </Container>
 </header>
+
+<style>
+  :root {
+    --header-bg-start: #eeece1;
+    --header-bg-mid: rgba(238, 236, 225, 0.7);
+  }
+  :global(html.dark) {
+    --header-bg-start: #000000;
+    --header-bg-mid: rgba(0, 0, 0, 0.55);
+  }
+</style>
