@@ -1,5 +1,5 @@
 ---
-title: "2024 Reflection"
+title: "2024 · Reflection"
 description: "Four principles distilled from a year of experience."
 date: "Jan 05 2025"
 ---

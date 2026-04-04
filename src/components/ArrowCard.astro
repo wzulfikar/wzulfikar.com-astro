@@ -6,6 +6,12 @@ type Props = {
 }
 
 const { entry } = Astro.props;
+
+const shortDate = entry.data.date.toLocaleDateString("en-us", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
 ---
 
 <a href={`/${entry.collection}/${entry.slug}`} class="relative group flex flex-nowrap py-3 px-4 pr-10 rounded-lg border border-black/15 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white text-black dark:text-white/80 transition-colors duration-300 ease-in-out">
@@ -15,6 +21,9 @@ const { entry } = Astro.props;
     </div>
     <div class="text-sm">
       {entry.data.description}
+    </div>
+    <div class="text-xs text-black/40 dark:text-white/40 mt-1">
+      {shortDate}
     </div>
   </div>
   <svg
