@@ -29,12 +29,20 @@ body {
   @apply flex flex-col;
   @apply bg-[#eeece1] dark:bg-black;
   @apply text-black/50 dark:text-white/75;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: color 0.4s ease, background-color 0.4s ease !important;
 }
 
 header {
   @apply fixed top-0 left-0 right-0 z-50 py-5;
   @apply bg-[#eeece1]/75 dark:bg-black/25;
   @apply backdrop-blur-sm saturate-200;
+  transition: background-color 0.4s ease;
 }
 
 main {

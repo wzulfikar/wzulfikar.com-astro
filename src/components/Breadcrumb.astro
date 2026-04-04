@@ -1,0 +1,21 @@
+---
+import { House } from "@lucide/astro";
+
+type Props = {
+  section: string;
+  href: string;
+}
+
+const { section, href } = Astro.props;
+---
+
+<nav class="flex items-center gap-1.5 text-sm text-black/50 dark:text-white/50">
+  <a href="/" class="hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out">
+    <House class="size-4" />
+  </a>
+  <span>/</span>
+  <a href={href} class="hover:text-black dark:hover:text-white transition-colors duration-300 ease-in-out capitalize">
+    {section}
+  </a>
+  <span>/</span>
+</nav>

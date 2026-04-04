@@ -4,7 +4,7 @@ import PageLayout from "@layouts/PageLayout.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
-import BackToPrev from "@components/BackToPrev.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 
 export async function getStaticPaths() {
   const entries = (await getCollection("snowball"))
@@ -24,9 +24,7 @@ const { Content } = await entry.render();
 <PageLayout title={entry.data.title} description={entry.data.description}>
   <Container>
     <div class="animate">
-      <BackToPrev href="/snowball">
-        Back to snowball
-      </BackToPrev>
+      <Breadcrumb section="snowball" href="/snowball" />
     </div>
     <div class="space-y-1 my-10">
       <div class="animate flex items-center gap-1.5">

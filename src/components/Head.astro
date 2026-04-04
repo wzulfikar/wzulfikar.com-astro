@@ -93,9 +93,9 @@ const { title, description, image = "/nano.png" } = Astro.props;
       const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
       localStorage.setItem("theme", next);
       if (next === "system") {
-        toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
+        toggleTheme(window.matchMedia("(prefers-color-scheme: dark)").matches, true);
       } else {
-        toggleTheme(next === "dark");
+        toggleTheme(next === "dark", true);
       }
       updateThemeToggleUI(next);
     });
@@ -135,32 +135,16 @@ const { title, description, image = "/nano.png" } = Astro.props;
     });
   }
 
-function toggleTheme(dark) {
-    const css = document.createElement("style");
-
-    css.appendChild(
-      document.createTextNode(
-        `* {
-             -webkit-transition: none !important;
-             -moz-transition: none !important;
-             -o-transition: none !important;
-             -ms-transition: none !important;
-             transition: none !important;
-          }
-        `,
-      )
-    );
-
-    document.head.appendChild(css);
-
+function toggleTheme(dark, animate = false) {
+    if (animate) {
+      document.documentElement.classList.add("theme-transitioning");
+      setTimeout(() => document.documentElement.classList.remove("theme-transitioning"), 500);
+    }
     if (dark) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-
-  window.getComputedStyle(css).opacity;
-    document.head.removeChild(css);
   }
 
   function updateThemeToggleUI(theme) {
