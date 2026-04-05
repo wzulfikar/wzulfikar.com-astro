@@ -6,7 +6,7 @@ import Link from "@components/Link.astro";
 import { HOME, SITE, SOCIALS } from "@consts";
 import PageLayout from "@layouts/PageLayout.astro";
 
-const allBlog = (await getCollection("post"))
+const allPosts = (await getCollection("post"))
 	.filter((post) => !post.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
@@ -40,14 +40,14 @@ const allSnowball = (await getCollection("snowball"))
             Post
           </h5>
         </div>
-        <ul class="flex flex-col gap-4" data-future-filter data-limit={SITE.NUM_POSTS_ON_HOMEPAGE} data-see-all="blog-see-all">
-          {allBlog.map(post => (
+        <ul class="flex flex-col gap-4" data-future-filter data-limit={SITE.NUM_POSTS_ON_HOMEPAGE} data-see-all="post-see-all">
+          {allPosts.map(post => (
             <li data-date={post.data.date.toISOString()}>
               <ArrowCard entry={post} />
             </li>
           ))}
         </ul>
-        <div id="blog-see-all" class="flex justify-start" hidden>
+        <div id="post-see-all" class="flex justify-start" hidden>
           <Link href="/post">See all posts</Link>
         </div>
       </section>
