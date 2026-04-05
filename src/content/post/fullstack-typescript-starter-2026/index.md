@@ -23,6 +23,7 @@ One codebase. TypeScript everywhere. Deploy to the edge.
 | Mobile | Expo (iOS + Android) |
 | Desktop | Electron |
 | Scheduler | Trigger.dev |
+| Error Reporting | Sentry |
 
 ---
 
@@ -140,7 +141,20 @@ Use it for: sending emails after a delay, processing uploads, syncing data on a 
 
 `bun test` is the test runner. It implements the Jest API so existing tests migrate without changes, but startup time is dramatically faster because Bun runs TypeScript natively with no transpile step. A test file that takes 2+ seconds to start in Jest starts in under 100ms in Bun.
 
-For pre-commit hooks, pass staged files directly to keep the feedback loop tight. For pre-push, run the full suite.
+For pre-commit hooks, pass staged files directly to keep the feedback loop tight. For pre-push, run the full suite. A typical `lefthook.yml` setup:
+
+```yaml
+pre-commit:
+  commands:
+    test:
+      glob: "*.{ts,tsx}"
+      run: bun test {staged_files}
+
+pre-push:
+  commands:
+    test:
+      run: bun test
+```
 
 One caveat with Expo: React Native ships Flow types, and Bun can't process them. Any test that imports from React Native must still run under Jest. The approach I use is a file suffix split:
 
@@ -152,6 +166,51 @@ This keeps the fast runner as the default and isolates Jest to only the tests th
 Because Jest is slow to start, the practical approach when writing `.jest.ts` tests is to run `jest --watch` for the duration. Leave it running in a terminal while you work; it picks up changes without paying the full startup cost each time. Once you're done, CI runs the full suite.
 
 For Expo end-to-end tests, use [Maestro](https://maestro.mobile.dev/). It drives the app on a real simulator or device using simple YAML flows, and integrates cleanly with EAS for running on CI.
+
+### Sentry
+
+[Sentry](https://sentry.io/) is the error reporting layer. It catches exceptions in production before users report them, with full stack traces, breadcrumbs, and session replay.
+
+Three SDKs, one dashboard:
+
+- **Web**: `@sentry/nextjs` — the wizard handles `next.config.js` wrapping, source map upload, and edge runtime config automatically
+- **Mobile**: `@sentry/react-native` ships an Expo plugin (`@sentry/expo`), so it plugs into the managed workflow without ejecting
+- **Desktop**: `@sentry/electron` covers both the main process and renderer
+
+All three point to the same Sentry project. One alert rule set, one inbox, one place to triage what's breaking across platforms.
+
+Source maps are essential. Without them, minified stack traces are useless. Both the Next.js and Expo SDKs handle upload as part of the build step, so this is not something you configure manually.
+
+Performance monitoring is on by default. Set a low sample rate in production (`tracesSampleRate: 0.1`) and a higher one in staging. The data is useful; the cost of capturing everything in production is not.
+
+#### User Feedback Screen
+
+Every app needs a way for users to reach the developer. A dedicated feedback screen handles bug reports, questions, and feature requests without routing everything through email or social media.
+
+Sentry ships a [User Feedback widget](https://docs.sentry.io/product/user-feedback/) that attaches feedback to error events. That's useful, but it only surfaces when something goes wrong. A standalone screen is more accessible: users can send feedback at any point, not just after an error.
+
+The pattern I use is a simple screen with three fields:
+
+- **Type**: Bug report / Question / Feature request (segmented control or select)
+- **Message**: freeform text area
+- **Email**: pre-filled from the auth session if the user is signed in
+
+On web, this lives at `/feedback`. On mobile, it's a modal accessible from the profile or settings screen. On desktop, the same modal pattern works. The implementation is intentionally thin — no state machine, no multi-step form, just a single POST to Sentry's User Feedback API or a Supabase table if you prefer to keep it in-house.
+
+Wire the submission to Sentry:
+
+```ts
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.captureFeedback({
+  name: user.name,
+  email: user.email,
+  message: form.message,
+  tags: { type: form.type },
+});
+```
+
+The screen is the same across platforms. Feedback flows into Sentry alongside error events, so you see them in the same place you're already triaging production issues.
 
 ### Lefthook
 
@@ -207,10 +266,16 @@ One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity;
 /
 ├── apps/
 │   ├── web/          # Next.js (OpenNext → Cloudflare)
+│   │   └── app/
+│   │       └── feedback/
+│   │           └── page.tsx  # Feedback screen at /feedback
 │   ├── mobile/       # Expo
+│   │   └── screens/
+│   │       └── FeedbackModal.tsx
 │   └── desktop/      # Electron
 ├── packages/
 │   ├── ui/           # Shared React components
+│   │   └── feedback/ # Shared feedback form (web + desktop)
 │   ├── types/        # Shared TypeScript types
 │   └── config/       # Shared Biome, Tailwind, tsconfig
 ├── commands/         # Ad hoc scripts for repo and runtime data management
@@ -236,9 +301,11 @@ A few things conspicuously absent:
 
 - **ESLint + Prettier**, replaced by Biome
 - **Husky**, replaced by Lefthook
-- **Jest**, replaced by `bun test`
+- **Jest**, replaced by `bun test` (except for Expo component tests)
 - **Lodash**, replaced by es-toolkit
 - **Turborepo or Nx**, not needed until the complexity justifies it
+- **Custom error tracking**, replaced by Sentry
+- **Intercom or Zendesk**, replaced by the in-app feedback screen wired to Sentry
 
 Each of these was a deliberate removal, not an oversight. The replacements do the same job with less surface area to maintain.
 
