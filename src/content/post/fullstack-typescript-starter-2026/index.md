@@ -196,6 +196,7 @@ One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity;
 │   ├── ui/           # Shared React components
 │   ├── types/        # Shared TypeScript types
 │   └── config/       # Shared Biome, Tailwind, tsconfig
+├── commands/         # Ad hoc scripts for repo and runtime data management
 ├── docs/
 │   └── agents/       # Instructions for AI agents
 │       └── fix-types.md
@@ -205,6 +206,8 @@ One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity;
 ```
 
 The `docs/` folder holds markdown that both humans and agents can read. `docs/agents/` is specifically for agent instructions: reusable prompts that encode how to handle common tasks in this codebase. `fix-types.md` is a good example, it tells the agent exactly how type errors should be approached and resolved in this project, rather than relying on generic AI behaviour.
+
+The `commands/` folder holds ad hoc scripts for things like backfilling data, triggering one-off jobs, or inspecting runtime state. These aren't part of the app; they're tools for managing it. Each file is a standalone script run directly with `bun run commands/some-script.ts`. For argument parsing, I use [zod-opts](https://github.com/ndaidong/zod-opts): define your args as a Zod schema and get parsed, typed values back with minimal boilerplate. No need to reach for a full CLI framework for scripts you run a handful of times.
 
 The packages are local workspace references, not published to npm. Change a shared type and every app picks it up immediately. No build pipeline, no version bumps, no publication step.
 
