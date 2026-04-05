@@ -119,6 +119,12 @@ Use it for: sending emails after a delay, processing uploads, syncing data on a 
 
 [TypeScript Go](https://github.com/microsoft/typescript-go) is the Go rewrite of the TypeScript compiler. The speed difference is dramatic: 2 to 3× faster than the original `tsc`. Use it whenever possible. It's still in preview as of early 2026, so not every repo can adopt it yet, but it's the direction things are heading and worth enabling early when the project supports it.
 
+### Bun Test
+
+`bun test` is the test runner. It implements the Jest API so existing tests migrate without changes, but startup time is dramatically faster because Bun runs TypeScript natively with no transpile step. A test file that takes 2+ seconds to start in Jest starts in under 100ms in Bun.
+
+For pre-commit hooks, pass staged files directly to keep the feedback loop tight. For pre-push, run the full suite. Jest is not in this stack.
+
 ### Lefthook
 
 [Lefthook](https://github.com/evilmartians/lefthook) manages git hooks. It replaces Husky: no Node.js runtime dependency, single YAML config, faster execution. Run Biome and the type checker on pre-commit without noticeably slowing down commits.
@@ -199,6 +205,7 @@ A few things conspicuously absent:
 
 - **ESLint + Prettier**, replaced by Biome
 - **Husky**, replaced by Lefthook
+- **Jest**, replaced by `bun test`
 - **Lodash**, replaced by es-toolkit
 - **Turborepo or Nx**, not needed until the complexity justifies it
 
