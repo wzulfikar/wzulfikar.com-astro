@@ -269,7 +269,7 @@ Not a monorepo. The root of the repo is the primary app, and secondary platforms
 ├── app/
 │   └── feedback/
 │       └── page.tsx      # Feedback screen at /feedback
-├── mobile/               # Expo
+├── expo/                 # Expo
 │   └── screens/
 │       └── FeedbackModal.tsx
 ├── commands/             # Ad hoc scripts for repo and runtime data management
