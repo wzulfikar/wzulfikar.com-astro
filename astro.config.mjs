@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
 	site: "https://wzulfikar.com",
+	prefetch: true,
 	integrations: [mdx(), sitemap()],
 	vite: {
 		plugins: [tailwindcss()],
