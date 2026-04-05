@@ -31,7 +31,7 @@ One codebase. TypeScript everywhere. Deploy to the edge.
 
 The backend runs on [OpenNext](https://opennext.js.org/) deployed to Cloudflare Workers. This gives you a Next.js-compatible server at the edge globally, with no cold starts.
 
-I've used Vercel and Netlify before. Cloudflare is better — not dramatically so in DX, but the free tier is genuinely more generous for personal projects and small teams. For a solo builder, the operational cost is near zero and the limits are hard to hit early.
+I've used Vercel and Netlify before. Cloudflare is better on the free tier and it stays better as you scale — the pricing doesn't suddenly become punishing when you grow. But the bigger reason is the ecosystem. Cloudflare isn't just hosting: it's CDN, Workers, Cron Triggers, Queues, R2 (object storage), KV, D1 (SQLite at the edge), and more — all under one roof. You can replace several third-party services just by going deeper into the platform you're already on.
 
 ### Auth, Database, and Realtime: Supabase
 
