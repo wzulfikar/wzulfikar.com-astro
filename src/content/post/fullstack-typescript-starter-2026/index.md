@@ -132,6 +132,10 @@ One caveat with Expo: React Native ships Flow types, and Bun can't process them.
 
 This keeps the fast runner as the default and isolates Jest to only the tests that genuinely need it. Business logic, utilities, and anything that doesn't touch React Native internals goes in `.test.ts`. Component tests that render native elements go in `.jest.tsx`.
 
+Because Jest is slow to start, the practical approach when writing `.jest.ts` tests is to run `jest --watch` for the duration. Leave it running in a terminal while you work; it picks up changes without paying the full startup cost each time. Once you're done, CI runs the full suite.
+
+For Expo end-to-end tests, use [Maestro](https://maestro.mobile.dev/). It drives the app on a real simulator or device using simple YAML flows, and integrates cleanly with EAS for running on CI.
+
 ### Lefthook
 
 [Lefthook](https://github.com/evilmartians/lefthook) manages git hooks. It replaces Husky: no Node.js runtime dependency, single YAML config, faster execution. Run Biome and the type checker on pre-commit without noticeably slowing down commits.
