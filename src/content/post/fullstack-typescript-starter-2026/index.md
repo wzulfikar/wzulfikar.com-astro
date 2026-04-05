@@ -89,6 +89,23 @@ For styling, use [NativeWind](https://www.nativewind.dev/), specifically the `mc
 
 [RevenueCat](https://www.revenuecat.com/) manages in-app purchases and subscriptions on iOS and Android. It abstracts StoreKit and Play Billing into a single SDK with a dashboard for MRR, trials, and churn. The equivalent of Autumn, but for mobile stores.
 
+### Who to Follow on X for Expo
+
+The Expo ecosystem moves fast. Following the right people means you catch breaking changes, new APIs, and community patterns before they're in the docs.
+
+**Companies:**
+- [@callstackio](https://x.com/callstackio) — Callstack, maintainers of React Native core and tools like React Native Paper and RNGH
+- [@swmansion](https://x.com/swmansion) — Software Mansion, who built Reanimated, Gesture Handler, and Screens
+- [@infinite_red](https://x.com/infinite_red) — Infinite Red, maintainers of Ignite and long-time React Native specialists
+
+**People:**
+- [@Baconbrix](https://x.com/Baconbrix) — Evan Bacon, core Expo engineer. Follows him for Expo Router updates, web support news, and what's actually shipping
+
+**Design:**
+- [@emilkowalski_](https://x.com/emilkowalski_) — Emil Kowalski, creator of Sonner and Vaul. The standard for what polished, minimal UI looks and feels like in the React ecosystem
+
+---
+
 ### EAS Build Scripts
 
 EAS (Expo Application Services) builds your app in CI. Managing your own Xcode/Android Studio pipeline is the alternative. It isn't worth it. Custom build scripts in `eas.json` handle environment-specific configurations cleanly and the DX improvement over a manual setup is significant.
