@@ -1,13 +1,13 @@
 ---
 title: "Full Stack TypeScript Starter for Solo Builders in 2026"
-description: "A battle-tested TypeScript stack for solo builders shipping web, mobile, and desktop apps in 2026 — from Cloudflare-deployed backends to Expo native apps, in one codebase."
+description: "A battle-tested TypeScript stack for solo builders shipping web, mobile, and desktop apps in 2026 - from Cloudflare-deployed backends to Expo native apps, in one codebase."
 date: "Apr 05 2026"
 draft: true
 ---
 
-Building a full stack product alone used to mean choosing between moving fast and doing it right. In 2026, the tooling has matured enough that you no longer have to choose. This is the stack I use — not a wishlist, not a benchmark comparison, but what I actually reach for when starting a new project.
+Building a full stack product alone used to mean choosing between moving fast and doing it right. In 2026, the tooling has matured enough that you no longer have to choose. This is the stack I use - not a wishlist, not a benchmark comparison, but what I actually reach for when starting a new project.
 
-The intent is also practical: when I start something new and feed this post to an AI, I want it to immediately understand my defaults and make suggestions that fit — not generic boilerplate.
+The intent is also practical: when I start something new and feed this post to an AI, I want it to immediately understand my defaults and make suggestions that fit - not generic boilerplate.
 
 This covers web, mobile (iOS and Android), desktop, background jobs, and the tools around them. All from a single codebase.
 
@@ -31,7 +31,7 @@ One codebase. TypeScript everywhere. Deploy to the edge.
 
 The backend runs on [OpenNext](https://opennext.js.org/) deployed to Cloudflare Workers. This gives you a Next.js-compatible server at the edge globally, with no cold starts.
 
-I've used Vercel and Netlify before. Cloudflare is better on the free tier and it stays better as you scale — the pricing doesn't suddenly become punishing when you grow. But the bigger reason is the ecosystem. Cloudflare isn't just hosting: it's CDN, Workers, Cron Triggers, Queues, R2 (object storage), KV, D1 (SQLite at the edge), and more — all under one roof. You can replace several third-party services just by going deeper into the platform you're already on.
+I've used Vercel and Netlify before. Cloudflare is better on the free tier and it stays better as you scale - the pricing doesn't suddenly become punishing when you grow. But the bigger reason is the ecosystem. Cloudflare isn't just hosting: it's CDN, Workers, Cron Triggers, Queues, R2 (object storage), KV, D1 (SQLite at the edge), and more - all under one roof. You can replace several third-party services just by going deeper into the platform you're already on.
 
 ### Auth, Database, and Realtime: Supabase
 
@@ -50,7 +50,7 @@ For local development: running a local Supabase instance is always possible, but
 
 ### Billing: Autumn
 
-[Autumn](https://useautumn.com/) handles billing and usage tracking for web. Stripe alone is possible — but when your product involves usage-based pricing, Autumn earns its place. It gives you a dashboard for monitoring usage across customers, which you'd otherwise have to build yourself on top of Stripe's data model.
+[Autumn](https://useautumn.com/) handles billing and usage tracking for web. Stripe alone is possible - but when your product involves usage-based pricing, Autumn earns its place. It gives you a dashboard for monitoring usage across customers, which you'd otherwise have to build yourself on top of Stripe's data model.
 
 Think of it as Stripe plus a usage layer plus the admin visibility to go with it.
 
@@ -58,11 +58,11 @@ Think of it as Stripe plus a usage layer plus the admin visibility to go with it
 
 ## Frontend: React + Tailwind + shadcn
 
-The frontend is React with [Tailwind CSS](https://tailwindcss.com/) for styling and [shadcn/ui](https://ui.shadcn.com/) for components. shadcn is not a component library you install — it's a collection of copy-paste components built on Radix primitives that you own and modify. That distinction matters when you need to deviate from defaults.
+The frontend is React with [Tailwind CSS](https://tailwindcss.com/) for styling and [shadcn/ui](https://ui.shadcn.com/) for components. shadcn is not a component library you install - it's a collection of copy-paste components built on Radix primitives that you own and modify. That distinction matters when you need to deviate from defaults.
 
 ### Data Fetching: React Query
 
-[TanStack Query](https://tanstack.com/query) manages server state. Caching, background refetching, optimistic updates, pagination — it handles the parts of data fetching that are tedious to write correctly from scratch. Pair it with `ky` for the actual HTTP calls.
+[TanStack Query](https://tanstack.com/query) manages server state. Caching, background refetching, optimistic updates, pagination - it handles the parts of data fetching that are tedious to write correctly from scratch. Pair it with `ky` for the actual HTTP calls.
 
 ### HTTP: ky
 
@@ -80,11 +80,11 @@ The frontend is React with [Tailwind CSS](https://tailwindcss.com/) for styling 
 
 ### Tailwind in Expo: NativeWind
 
-For styling, use [NativeWind](https://www.nativewind.dev/) — specifically the `mcrgea/tailwind` fork — which brings Tailwind classes to React Native components. Same mental model as the web, translated to native.
+For styling, use [NativeWind](https://www.nativewind.dev/) - specifically the `mcrgea/tailwind` fork - which brings Tailwind classes to React Native components. Same mental model as the web, translated to native.
 
 ### Bottom Sheet: Gorhom Bottom Sheet
 
-[@gorhom/bottom-sheet](https://gorhom.github.io/react-native-bottom-sheet/) is the standard for bottom sheets in Expo. Gesture handling, keyboard avoidance, snap points — it handles all of it reliably.
+[@gorhom/bottom-sheet](https://gorhom.github.io/react-native-bottom-sheet/) is the standard for bottom sheets in Expo. Gesture handling, keyboard avoidance, snap points - it handles all of it reliably.
 
 ### Billing: RevenueCat
 
@@ -92,13 +92,13 @@ For styling, use [NativeWind](https://www.nativewind.dev/) — specifically the 
 
 ### EAS Build Scripts
 
-EAS (Expo Application Services) builds your app in CI. Managing your own Xcode/Android Studio pipeline is the alternative — it isn't worth it. Custom build scripts in `eas.json` handle environment-specific configurations cleanly and the DX improvement over a manual setup is significant.
+EAS (Expo Application Services) builds your app in CI. Managing your own Xcode/Android Studio pipeline is the alternative - it isn't worth it. Custom build scripts in `eas.json` handle environment-specific configurations cleanly and the DX improvement over a manual setup is significant.
 
 ---
 
 ## Desktop: Electron
 
-[Electron](https://www.electronjs.org/) for desktop. It's heavy, but for a solo builder the ability to reuse React components and the entire npm ecosystem across web and desktop is worth the tradeoff. The use case here is customer demand — when a web app also needs a desktop version, Electron lets you ship it without starting from scratch.
+[Electron](https://www.electronjs.org/) for desktop. It's heavy, but for a solo builder the ability to reuse React components and the entire npm ecosystem across web and desktop is worth the tradeoff. The use case here is customer demand - when a web app also needs a desktop version, Electron lets you ship it without starting from scratch.
 
 ---
 
@@ -114,15 +114,15 @@ Use it for: sending emails after a delay, processing uploads, syncing data on a 
 
 ### Biome
 
-[Biome](https://biomejs.dev/) replaces both ESLint and Prettier in one fast binary. No plugin ecosystem to manage, no version conflicts between lint and format configs. ESLint and Prettier are not in this stack — Biome handles everything they did, faster.
+[Biome](https://biomejs.dev/) replaces both ESLint and Prettier in one fast binary. No plugin ecosystem to manage, no version conflicts between lint and format configs. ESLint and Prettier are not in this stack - Biome handles everything they did, faster.
 
 ### TypeScript Go
 
-[TypeScript Go](https://github.com/microsoft/typescript-go) is the Go rewrite of the TypeScript compiler. The speed difference is dramatic — 2 to 3× faster than the original `tsc`. Use it whenever possible. It's still in preview as of early 2026, so not every repo can adopt it yet, but it's the direction things are heading and worth enabling early when the project supports it.
+[TypeScript Go](https://github.com/microsoft/typescript-go) is the Go rewrite of the TypeScript compiler. The speed difference is dramatic - 2 to 3× faster than the original `tsc`. Use it whenever possible. It's still in preview as of early 2026, so not every repo can adopt it yet, but it's the direction things are heading and worth enabling early when the project supports it.
 
 ### Lefthook
 
-[Lefthook](https://github.com/evilmartians/lefthook) manages git hooks. It replaces Husky — no Node.js runtime dependency, single YAML config, faster execution. Run Biome and the type checker on pre-commit without noticeably slowing down commits.
+[Lefthook](https://github.com/evilmartians/lefthook) manages git hooks. It replaces Husky - no Node.js runtime dependency, single YAML config, faster execution. Run Biome and the type checker on pre-commit without noticeably slowing down commits.
 
 ### Zed
 
@@ -138,11 +138,11 @@ Use it for: sending emails after a delay, processing uploads, syncing data on a 
 
 ### type-fest
 
-[type-fest](https://github.com/sindresorhus/type-fest) fills gaps in TypeScript's standard utility types. `Simplify`, `RequireAtLeastOne`, `SetRequired`, `JsonValue` — reach for these before writing your own.
+[type-fest](https://github.com/sindresorhus/type-fest) fills gaps in TypeScript's standard utility types. `Simplify`, `RequireAtLeastOne`, `SetRequired`, `JsonValue` - reach for these before writing your own.
 
 ### React Query, ky, Tailwind, shadcn, Sonner
 
-Covered above in the frontend section — these apply across web and desktop.
+Covered above in the frontend section - these apply across web and desktop.
 
 ---
 
@@ -150,25 +150,25 @@ Covered above in the frontend section — these apply across web and desktop.
 
 These live outside the codebase but shape the quality of what ships.
 
-**[Iconcraft](https://iconcraft.app/)** — AI-generated app icons. Gets you to something polished faster than a designer handoff for an early-stage app.
+**[Iconcraft](https://iconcraft.app/)** - AI-generated app icons. Gets you to something polished faster than a designer handoff for an early-stage app.
 
-**[Claude Desktop / Mobile](https://claude.ai/)** — Primary research tool. Useful for understanding unfamiliar APIs, debugging obscure errors, and talking through architecture decisions. The mobile version means it's available anywhere.
+**[Claude Desktop / Mobile](https://claude.ai/)** - Primary research tool. Useful for understanding unfamiliar APIs, debugging obscure errors, and talking through architecture decisions. The mobile version means it's available anywhere.
 
-**[Databorder MCP](https://databorder.com/)** — MCP server that connects Claude to live social data. Useful for researching what developers are actually talking about, as opposed to what the official docs say.
+**[Databorder MCP](https://databorder.com/)** - MCP server that connects Claude to live social data. Useful for researching what developers are actually talking about, as opposed to what the official docs say.
 
-**[RocketSim](https://www.rocketsim.app/)** — Screen recording for the iOS simulator. The output is polished enough to use directly in marketing.
+**[RocketSim](https://www.rocketsim.app/)** - Screen recording for the iOS simulator. The output is polished enough to use directly in marketing.
 
-**[TinyShots](https://tinyshots.app/)** — Drop in a screenshot, get a clean device mockup out.
+**[TinyShots](https://tinyshots.app/)** - Drop in a screenshot, get a clean device mockup out.
 
-**[Matte.app](https://matte.app/)** — Screen recording with clean export options.
+**[Matte.app](https://matte.app/)** - Screen recording with clean export options.
 
-**[ButterKit](https://butterkit.io/)** — App Store screenshot creator. Handles sizing, templates, and text overlays for App Store listings.
+**[ButterKit](https://butterkit.io/)** - App Store screenshot creator. Handles sizing, templates, and text overlays for App Store listings.
 
 ---
 
 ## Folder Structure
 
-One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity — all apps in one place, shared code extracted into local packages, no build orchestration overhead until it's actually needed.
+One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity - all apps in one place, shared code extracted into local packages, no build orchestration overhead until it's actually needed.
 
 ```
 /
@@ -193,10 +193,10 @@ The packages are local workspace references, not published to npm. Change a shar
 
 A few things conspicuously absent:
 
-- **ESLint + Prettier** — replaced by Biome
-- **Husky** — replaced by Lefthook
-- **Lodash** — replaced by es-toolkit
-- **Turborepo or Nx** — not needed until the complexity justifies it
+- **ESLint + Prettier** - replaced by Biome
+- **Husky** - replaced by Lefthook
+- **Lodash** - replaced by es-toolkit
+- **Turborepo or Nx** - not needed until the complexity justifies it
 
 Each of these was a deliberate removal, not an oversight. The replacements do the same job with less surface area to maintain.
 
@@ -206,7 +206,7 @@ Each of these was a deliberate removal, not an oversight. The replacements do th
 
 The theme across every choice is: reduce the number of decisions you have to make repeatedly. Biome removes the lint/format debate. Supabase removes the auth boilerplate. EAS removes the mobile CI setup. Autumn and RevenueCat remove the billing edge cases.
 
-Every tool on this list has been through a production cycle. The goal isn't to be on the bleeding edge — it's to ship without getting slowed down by infrastructure.
+Every tool on this list has been through a production cycle. The goal isn't to be on the bleeding edge - it's to ship without getting slowed down by infrastructure.
 
 ---
 
