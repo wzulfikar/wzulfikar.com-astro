@@ -123,7 +123,14 @@ Use it for: sending emails after a delay, processing uploads, syncing data on a 
 
 `bun test` is the test runner. It implements the Jest API so existing tests migrate without changes, but startup time is dramatically faster because Bun runs TypeScript natively with no transpile step. A test file that takes 2+ seconds to start in Jest starts in under 100ms in Bun.
 
-For pre-commit hooks, pass staged files directly to keep the feedback loop tight. For pre-push, run the full suite. Jest is not in this stack.
+For pre-commit hooks, pass staged files directly to keep the feedback loop tight. For pre-push, run the full suite.
+
+One caveat with Expo: React Native ships Flow types, and Bun can't process them. Any test that imports from React Native must still run under Jest. The approach I use is a file suffix split:
+
+- `.test.ts` / `.test.tsx`: runs with `bun test`
+- `.jest.ts` / `.jest.tsx`: runs with Jest
+
+This keeps the fast runner as the default and isolates Jest to only the tests that genuinely need it. Business logic, utilities, and anything that doesn't touch React Native internals goes in `.test.ts`. Component tests that render native elements go in `.jest.tsx`.
 
 ### Lefthook
 
