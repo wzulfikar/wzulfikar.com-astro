@@ -1,7 +1,7 @@
 ---
 title: "I missed out on asmartbear"
 description: "Better late than never, but the pain had to come first."
-date: "Apr 05 2026"
+date: "Apr 06 2026"
 ---
 
 I knew about Paul Graham's essays for years. I read them, appreciated them, bookmarked a few. But they never quite landed the way I expected. Good ideas, well written, but somehow abstract. I filed them away and moved on.

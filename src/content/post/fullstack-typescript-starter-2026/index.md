@@ -1,7 +1,7 @@
 ---
 title: "Full Stack TypeScript Starter for Solo Builders in 2026"
 description: "A battle-tested TypeScript stack for solo builders shipping web, mobile, and desktop apps in 2026, from Cloudflare-deployed backends to Expo native apps, in one codebase."
-date: "Apr 05 2026"
+date: "Apr 08 2026"
 ---
 
 Building a full stack product alone used to mean choosing between moving fast and doing it right. In 2026, the tooling has matured enough that you no longer have to choose. This is the stack I use, not a wishlist, not a benchmark comparison, but what I actually reach for when starting a new project.

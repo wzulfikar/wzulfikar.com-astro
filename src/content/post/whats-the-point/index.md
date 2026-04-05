@@ -1,7 +1,7 @@
 ---
 title: "What's the point"
 description: "One question that cuts through the noise when you're building."
-date: "Apr 05 2026"
+date: "Apr 07 2026"
 ---
 
 When I'm building something, I've started asking myself one question more than any other: what's the point?

@@ -1,7 +1,7 @@
 ---
 title: "Replace husky with lefthook"
 description: "Lefthook is faster, zero-dependency, and fits modern monorepo tooling better than husky. Here's why and how to switch."
-date: "Apr 05 2026"
+date: "Apr 10 2026"
 ---
 
 Husky is the default choice for Git hooks in JavaScript projects. It works, but it carries assumptions that start to chafe in modern setups: Node.js as a runtime requirement, a shell script per hook, and a sequential execution model that can make pre-commit feel slow. Lefthook fixes all of that.

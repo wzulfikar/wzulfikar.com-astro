@@ -1,7 +1,7 @@
 ---
 title: "Use bun test instead of Jest"
 description: "Bun's built-in test runner is Jest-compatible and dramatically faster. For most TypeScript projects there's no reason to reach for Jest anymore."
-date: "Apr 05 2026"
+date: "Apr 09 2026"
 ---
 
 Jest is the default test runner for JavaScript projects. It's battle-tested, has a massive ecosystem, and works fine. It's also slow in a way you stop noticing until you switch away from it.

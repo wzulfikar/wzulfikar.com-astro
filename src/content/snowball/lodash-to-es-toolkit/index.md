@@ -1,7 +1,7 @@
 ---
 title: "Move from Lodash to es-toolkit"
 description: "es-toolkit is a modern utility library built for today's JavaScript: tree-shakeable, TypeScript-first, and fast. Lodash solved real problems in 2013. Most of those problems are gone."
-date: "Apr 05 2026"
+date: "Apr 11 2026"
 ---
 
 JavaScript utility libraries have been around since the language itself was painful to work with. Understanding where we came from makes it clearer why switching now makes sense.

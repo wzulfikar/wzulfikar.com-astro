@@ -34,14 +34,14 @@ const years = Object.keys(entries).sort(
       <Breadcrumb section="snowball" href="/snowball" />
       <div class="space-y-4">
         {years.map(year => (
-          <section class="animate space-y-4">
+          <section class="animate space-y-4" data-year-section>
             <div class="font-semibold text-black dark:text-white">
               {year}
             </div>
             <div>
               <ul class="flex flex-col gap-4">
                 {entries[year].map((entry) => (
-                  <li>
+                  <li data-date={entry.data.date.toISOString()}>
                     <ArrowCard entry={entry} />
                   </li>
                 ))}
@@ -53,3 +53,17 @@ const years = Object.keys(entries).sort(
     </div>
   </Container>
 </PageLayout>
+
+<script>
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  document.querySelectorAll<HTMLLIElement>("li[data-date]").forEach((li) => {
+    if (new Date(li.dataset.date!) > today) li.hidden = true;
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-year-section]").forEach((section) => {
+    const items = section.querySelectorAll<HTMLLIElement>("li[data-date]");
+    if ([...items].every((li) => li.hidden)) section.hidden = true;
+  });
+</script>

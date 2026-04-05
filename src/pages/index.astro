@@ -9,17 +9,14 @@ import PageLayout from "@layouts/PageLayout.astro";
 const allBlog = (await getCollection("post"))
 	.filter((post) => !post.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const blog = allBlog.slice(0, SITE.NUM_POSTS_ON_HOMEPAGE);
 
 const allShow = (await getCollection("show"))
 	.filter((entry) => !entry.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const show = allShow.slice(0, SITE.NUM_SHOWS_ON_HOMEPAGE);
 
 const allSnowball = (await getCollection("snowball"))
 	.filter((entry) => !entry.data.draft)
 	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const snowball = allSnowball.slice(0, SITE.NUM_SNOWBALLS_ON_HOMEPAGE);
 ---
 
 <PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
@@ -43,18 +40,16 @@ const snowball = allSnowball.slice(0, SITE.NUM_SNOWBALLS_ON_HOMEPAGE);
             Post
           </h5>
         </div>
-        <ul class="flex flex-col gap-4">
-          {blog.map(post => (
-            <li>
+        <ul class="flex flex-col gap-4" data-future-filter data-limit={SITE.NUM_POSTS_ON_HOMEPAGE} data-see-all="blog-see-all">
+          {allBlog.map(post => (
+            <li data-date={post.data.date.toISOString()}>
               <ArrowCard entry={post} />
             </li>
           ))}
         </ul>
-        {allBlog.length > SITE.NUM_POSTS_ON_HOMEPAGE && (
-          <div class="flex justify-start">
-            <Link href="/post">See all posts</Link>
-          </div>
-        )}
+        <div id="blog-see-all" class="flex justify-start" hidden>
+          <Link href="/post">See all posts</Link>
+        </div>
       </section>
 
       <section class="animate space-y-6">
@@ -64,18 +59,16 @@ const snowball = allSnowball.slice(0, SITE.NUM_SNOWBALLS_ON_HOMEPAGE);
           </h5>
           <p class="text-sm text-black/80 dark:text-white/80 mt-1">Things I'm working on.</p>
         </div>
-        <ul class="flex flex-col gap-4">
-          {show.map(entry => (
-            <li>
+        <ul class="flex flex-col gap-4" data-future-filter data-limit={SITE.NUM_SHOWS_ON_HOMEPAGE} data-see-all="show-see-all">
+          {allShow.map(entry => (
+            <li data-date={entry.data.date.toISOString()}>
               <ArrowCard entry={entry} />
             </li>
           ))}
         </ul>
-        {allShow.length > SITE.NUM_SHOWS_ON_HOMEPAGE && (
-          <div class="flex justify-start">
-            <Link href="/show">See all</Link>
-          </div>
-        )}
+        <div id="show-see-all" class="flex justify-start" hidden>
+          <Link href="/show">See all</Link>
+        </div>
       </section>
 
       <section class="animate space-y-6">
@@ -85,18 +78,16 @@ const snowball = allSnowball.slice(0, SITE.NUM_SNOWBALLS_ON_HOMEPAGE);
           </h5>
           <p class="text-sm text-black/80 dark:text-white/80 mt-1">Patterns worth investing in. Compounding and transferable.</p>
         </div>
-        <ul class="flex flex-col gap-4">
-          {snowball.map(entry => (
-            <li>
+        <ul class="flex flex-col gap-4" data-future-filter data-limit={SITE.NUM_SNOWBALLS_ON_HOMEPAGE} data-see-all="snowball-see-all">
+          {allSnowball.map(entry => (
+            <li data-date={entry.data.date.toISOString()}>
               <ArrowCard entry={entry} />
             </li>
           ))}
         </ul>
-        {allSnowball.length > SITE.NUM_SNOWBALLS_ON_HOMEPAGE && (
-          <div class="flex justify-start">
-            <Link href="/snowball">See all</Link>
-          </div>
-        )}
+        <div id="snowball-see-all" class="flex justify-start" hidden>
+          <Link href="/snowball">See all</Link>
+        </div>
       </section>
 
       <section class="animate space-y-4">
@@ -123,3 +114,28 @@ const snowball = allSnowball.slice(0, SITE.NUM_SNOWBALLS_ON_HOMEPAGE);
     </div>
   </Container>
 </PageLayout>
+
+<script>
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  document.querySelectorAll<HTMLUListElement>("[data-future-filter]").forEach((ul) => {
+    const limit = ul.dataset.limit ? Number.parseInt(ul.dataset.limit) : 0;
+    const items = [...ul.querySelectorAll<HTMLLIElement>(":scope > li[data-date]")];
+    let shown = 0;
+
+    items.forEach((li) => {
+      const isFuture = new Date(li.dataset.date!) > today;
+      const overLimit = limit > 0 && shown >= limit;
+      li.hidden = isFuture || overLimit;
+      if (!isFuture && !overLimit) shown++;
+    });
+
+    const seeAllId = ul.dataset.seeAll;
+    if (seeAllId) {
+      const published = items.filter((li) => new Date(li.dataset.date!) <= today).length;
+      const el = document.getElementById(seeAllId);
+      if (el) el.hidden = published <= limit;
+    }
+  });
+</script>
