@@ -28,14 +28,17 @@ pre-commit:
     lint:
       glob: "*.{js,ts}"
       run: npx eslint {staged_files}
-    typecheck:
-      run: tsc --noEmit
     format:
       glob: "*.{js,ts,css}"
       run: npx prettier --check {staged_files}
+
+pre-push:
+  commands:
+    typecheck:
+      run: tsc --noEmit
 ```
 
-`parallel: true` runs all commands concurrently. On a project where lint + typecheck + format used to take 12 seconds sequentially, they finish in 4 seconds in parallel.
+`parallel: true` runs all commands concurrently. On a project where lint + format used to run sequentially, they finish in parallel. Type checking moves to `pre-push` where it belongs — more on that below.
 
 ## Migration from husky
 
@@ -109,6 +112,76 @@ npx lefthook run pre-commit
 ```
 
 This executes the hook commands without needing a Git event, so your CI pipeline and local hooks stay in sync from the same config file.
+
+## Tips
+
+**Alias `lefthook` to `lh`.** You'll type it constantly when debugging. Add this to your shell config:
+
+```bash
+alias lh=lefthook
+```
+
+Then `lh run pre-commit` replays the hook without making an actual commit. This is the fastest way to iterate on your config — change `lefthook.yml`, run `lh run pre-commit`, see what happens.
+
+---
+
+**Put file-aware commands in `pre-commit`, whole-codebase commands in `pre-push`.** This is the most important split to get right.
+
+Commands like formatting and linting can accept a list of files. Run them at commit time against only staged files — fast, focused, no wasted work:
+
+```yaml
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*.{js,ts,css}"
+      run: prettier --write {staged_files}
+    lint:
+      glob: "*.{js,ts}"
+      run: eslint {staged_files}
+```
+
+Type checking and full test suites can't meaningfully scope to staged files — they need the whole codebase. Put those in `pre-push` instead:
+
+```yaml
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: tsc --noEmit
+    test:
+      run: bun test
+```
+
+---
+
+**`pre-push` is fine for heavier checks.** `git push` is already a network operation — you're waiting for bytes to travel to a remote server. A few seconds of local checking before that happens isn't disruptive. The bar is just: don't make it unreasonably long.
+
+Which is why tool choice matters here. `tsc --noEmit` on a large project can take 20–30 seconds. The [TypeScript Go port](https://github.com/nicolo-ribaudo/tc39-source-map) (`tsgo`) runs the same check in a fraction of the time. Similarly, `bun test` is significantly faster than Jest for most test suites — cold start alone is an order of magnitude quicker.
+
+If your pre-push hook runs in under 10 seconds, people will leave it on. If it runs in 45 seconds, they'll start using `--no-verify`.
+
+---
+
+**Tests can live in both hooks.** A reasonable split:
+
+- `pre-commit`: run tests only for files related to what's staged (if your test runner supports it)
+- `pre-push`: run the full suite
+
+```yaml
+pre-commit:
+  commands:
+    test-related:
+      glob: "**/*.{ts,tsx}"
+      run: bun test --testPathPattern={staged_files}
+
+pre-push:
+  commands:
+    test-all:
+      run: bun test
+```
+
+This gives you fast feedback at commit time without waiting for every test, and a full safety net before anything leaves your machine.
 
 ## The result
 
