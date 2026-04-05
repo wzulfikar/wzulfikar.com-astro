@@ -1,7 +1,7 @@
 ---
 title: "Ship Faster with TestFlight + EAS Update"
 description: "How to go from idea to real users in hours, not days, using TestFlight for initial distribution and EAS Update for rapid iteration without rebuilding the app binary."
-date: "Apr 05 2026"
+date: "Apr 09 2026"
 ---
 
 Most mobile developers know about TestFlight. Fewer fully exploit what happens when you combine it with EAS Update. The combination unlocks a distribution loop that's genuinely fast: get the app to real users the same day, then keep improving it without any rebuild or resubmission.
