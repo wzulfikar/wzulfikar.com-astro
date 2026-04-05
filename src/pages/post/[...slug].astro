@@ -5,6 +5,7 @@ import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import LightboxImages from "@components/LightboxImages.astro";
 import PageLayout from "@layouts/PageLayout.astro";
+import { SITE } from "@consts";
 import { readingTime } from "@lib/utils";
 
 export async function getStaticPaths() {
@@ -20,9 +21,25 @@ type Props = CollectionEntry<"post">;
 
 const post = Astro.props;
 const { Content } = await post.render();
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "BlogPosting",
+	"headline": post.data.title,
+	"description": post.data.description,
+	"datePublished": post.data.date.toISOString(),
+	"url": canonicalURL,
+	"author": {
+		"@type": "Person",
+		"name": SITE.NAME,
+		"url": Astro.site,
+	},
+};
 ---
 
-<PageLayout title={post.data.title} description={post.data.description}>
+<PageLayout title={post.data.title} description={post.data.description} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
   <Container>
     <div class="animate">
       <Breadcrumb section="post" href="/post" trailingSlash />
