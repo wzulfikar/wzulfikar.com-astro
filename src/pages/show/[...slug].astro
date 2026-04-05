@@ -1,21 +1,21 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import PageLayout from "@layouts/PageLayout.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
-import { readingTime } from "@lib/utils";
-import Breadcrumb from "@components/Breadcrumb.astro";
-import Link from "@components/Link.astro";
 import LightboxImages from "@components/LightboxImages.astro";
+import Link from "@components/Link.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+import { readingTime } from "@lib/utils";
 
 export async function getStaticPaths() {
-  const entries = (await getCollection("show"))
-    .filter(entry => !entry.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  return entries.map((entry) => ({
-    params: { slug: entry.slug },
-    props: entry,
-  }));
+	const entries = (await getCollection("show"))
+		.filter((entry) => !entry.data.draft)
+		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: entry,
+	}));
 }
 type Props = CollectionEntry<"show">;
 
@@ -45,7 +45,7 @@ const { Content } = await entry.render();
         <nav class="animate flex gap-1">
           {entry.data.demoURL ? (
             <Link href={entry.data.demoURL} external>
-                demo {entry.data.demoURL.startsWith("https://x.com/") ? '(x.com)' :'' }
+                demo {entry.data.demoURL.startsWith("https://x.com/") ? "(x.com)" : "" }
             </Link>
           ):null}
           {entry.data.demoURL && entry.data.repoURL && (

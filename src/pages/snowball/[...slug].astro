@@ -1,19 +1,19 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import PageLayout from "@layouts/PageLayout.astro";
+import Breadcrumb from "@components/Breadcrumb.astro";
 import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
+import PageLayout from "@layouts/PageLayout.astro";
 import { readingTime } from "@lib/utils";
-import Breadcrumb from "@components/Breadcrumb.astro";
 
 export async function getStaticPaths() {
-  const entries = (await getCollection("snowball"))
-    .filter(entry => !entry.data.draft)
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-  return entries.map((entry) => ({
-    params: { slug: entry.slug },
-    props: entry,
-  }));
+	const entries = (await getCollection("snowball"))
+		.filter((entry) => !entry.data.draft)
+		.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	return entries.map((entry) => ({
+		params: { slug: entry.slug },
+		props: entry,
+	}));
 }
 type Props = CollectionEntry<"snowball">;
 

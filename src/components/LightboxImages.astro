@@ -1,6 +1,6 @@
 ---
 interface Props {
-  images?: { src: string; alt?: string }[];
+	images?: { src: string; alt?: string }[];
 }
 
 const { images } = Astro.props;
@@ -9,7 +9,7 @@ const { images } = Astro.props;
 {images && images.length > 0 && (
   <div class="lb-images">
     {images.map(img => (
-      <img src={img.src} alt={img.alt ?? ''} data-lightbox />
+      <img src={img.src} alt={img.alt ?? ""} data-lightbox />
     ))}
   </div>
 )}
@@ -105,37 +105,40 @@ const { images } = Astro.props;
 
 <script>
   function initLightbox() {
-    const lightbox = document.getElementById('img-lightbox');
-    const lbImg = document.getElementById('img-lightbox-img') as HTMLImageElement | null;
-    if (!lightbox || !lbImg) return;
+    const maybeLightbox = document.getElementById("img-lightbox");
+    const maybeLbImg = document.getElementById("img-lightbox-img") as HTMLImageElement | null;
+    if (!maybeLightbox || !maybeLbImg) return;
+
+    const lightbox = maybeLightbox!;
+    const lbImg = maybeLbImg!;
 
     function openLightbox(img: HTMLImageElement) {
       lbImg.src = img.src;
       lbImg.alt = img.alt;
-      lightbox.classList.add('open');
+      lightbox.classList.add("open");
     }
 
     function closeLightbox() {
-      lightbox.classList.replace('open', 'closing');
-      lightbox.addEventListener('animationend', () => {
-        lightbox.classList.remove('closing');
+      lightbox.classList.replace("open", "closing");
+      lightbox.addEventListener("animationend", () => {
+        lightbox.classList.remove("closing");
       }, { once: true });
     }
 
-    document.querySelectorAll('article p img').forEach(img => {
-      (img as HTMLElement).addEventListener('click', () => openLightbox(img as HTMLImageElement));
+    document.querySelectorAll("article p img").forEach(img => {
+      (img as HTMLElement).addEventListener("click", () => openLightbox(img as HTMLImageElement));
     });
 
-    document.querySelectorAll<HTMLImageElement>('[data-lightbox]').forEach(img => {
-      img.addEventListener('click', () => openLightbox(img));
+    document.querySelectorAll<HTMLImageElement>("[data-lightbox]").forEach(img => {
+      img.addEventListener("click", () => openLightbox(img));
     });
 
-    lightbox.addEventListener('click', closeLightbox);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
+    lightbox.addEventListener("click", closeLightbox);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeLightbox();
     });
   }
 
-  document.addEventListener('astro:after-swap', initLightbox);
+  document.addEventListener("astro:after-swap", initLightbox);
   initLightbox();
 </script>

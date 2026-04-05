@@ -1,0 +1,22 @@
+{
+	"formatter": {
+		"external": {
+			"command": "biome",
+			"arguments": ["check", "--write", "--unsafe", "--stdin-file-path", "{buffer_path}"]
+		}
+	},
+	"lsp": {
+		"json-language-server": {
+			"settings": {
+				"json": {
+					"schemas": [
+						{
+							"fileMatch": ["bun.lock"],
+							"schema": {}
+						}
+					]
+				}
+			}
+		}
+	}
+}
