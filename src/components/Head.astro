@@ -76,6 +76,33 @@ const { title, description, image = "/nano.png", type = "website" } = Astro.prop
   );
 </script>
 
+<script>
+  import { prefetch } from "astro:prefetch";
+
+  function setupMobileViewportPrefetch() {
+    if (!window.matchMedia("(hover: none)").matches) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const link = entry.target as HTMLAnchorElement;
+          prefetch(link.href);
+          observer.unobserve(link);
+        }
+      }
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>("a[href]").forEach((link) => {
+      if (link.href && link.origin === location.origin) {
+        observer.observe(link);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", setupMobileViewportPrefetch);
+  document.addEventListener("astro:after-swap", setupMobileViewportPrefetch);
+</script>
+
 <script is:inline>
   function init() {
     preloadTheme();
