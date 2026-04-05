@@ -180,10 +180,15 @@ One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity;
 │   ├── ui/           # Shared React components
 │   ├── types/        # Shared TypeScript types
 │   └── config/       # Shared Biome, Tailwind, tsconfig
+├── docs/
+│   └── agents/       # Instructions for AI agents
+│       └── fix-types.md
 ├── biome.json
 ├── lefthook.yml
 └── package.json
 ```
+
+The `docs/` folder holds markdown that both humans and agents can read. `docs/agents/` is specifically for agent instructions: reusable prompts that encode how to handle common tasks in this codebase. `fix-types.md` is a good example, it tells the agent exactly how type errors should be approached and resolved in this project, rather than relying on generic AI behaviour.
 
 The packages are local workspace references, not published to npm. Change a shared type and every app picks it up immediately. No build pipeline, no version bumps, no publication step.
 
