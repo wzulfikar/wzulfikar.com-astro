@@ -260,38 +260,51 @@ These live outside the codebase but shape the quality of what ships.
 
 ## Folder Structure
 
-One codebase, but not a monorepo in the Turborepo sense. The goal is simplicity; all apps in one place, shared code extracted into local packages, no build orchestration overhead until it's actually needed.
+Not a monorepo. The root of the repo is the primary app, and secondary platforms live as subdirectories. Which app is the root depends on what the product primarily is.
+
+**Web-first** (the backend and web UI are the main product, mobile is secondary):
 
 ```
-/
-├── apps/
-│   ├── web/          # Next.js (OpenNext → Cloudflare)
-│   │   └── app/
-│   │       └── feedback/
-│   │           └── page.tsx  # Feedback screen at /feedback
-│   ├── mobile/       # Expo
-│   │   └── screens/
-│   │       └── FeedbackModal.tsx
-│   └── desktop/      # Electron
-├── packages/
-│   ├── ui/           # Shared React components
-│   │   └── feedback/ # Shared feedback form (web + desktop)
-│   ├── types/        # Shared TypeScript types
-│   └── config/       # Shared Biome, Tailwind, tsconfig
-├── commands/         # Ad hoc scripts for repo and runtime data management
+/                         # Next.js root (OpenNext → Cloudflare)
+├── app/
+│   └── feedback/
+│       └── page.tsx      # Feedback screen at /feedback
+├── mobile/               # Expo
+│   └── screens/
+│       └── FeedbackModal.tsx
+├── commands/             # Ad hoc scripts for repo and runtime data management
 ├── docs/
-│   └── agents/       # Instructions for AI agents
+│   └── agents/           # Instructions for AI agents
 │       └── fix-types.md
 ├── biome.json
 ├── lefthook.yml
 └── package.json
 ```
 
-The `docs/` folder holds markdown that both humans and agents can read. `docs/agents/` is specifically for agent instructions: reusable prompts that encode how to handle common tasks in this codebase. `fix-types.md` is a good example, it tells the agent exactly how type errors should be approached and resolved in this project, rather than relying on generic AI behaviour.
+**Mobile-first** (the native app is the main product, web is secondary):
+
+```
+/                         # Expo root
+├── screens/
+│   └── FeedbackModal.tsx # Feedback modal from settings screen
+├── web/                  # Next.js (OpenNext → Cloudflare)
+│   └── app/
+│       └── feedback/
+│           └── page.tsx  # Feedback screen at /feedback
+├── commands/
+├── docs/
+│   └── agents/
+│       └── fix-types.md
+├── biome.json
+├── lefthook.yml
+└── package.json
+```
+
+The rule is: the primary platform sets the root. Everything else is a subdirectory. This avoids the overhead of a monorepo (no build orchestration, no workspace symlinks to debug) while keeping related code in one place.
+
+The `docs/` folder holds markdown that both humans and agents can read. `docs/agents/` is specifically for agent instructions: reusable prompts that encode how to handle common tasks in this codebase. `fix-types.md` is a good example — it tells the agent exactly how type errors should be approached and resolved in this project, rather than relying on generic AI behaviour.
 
 The `commands/` folder holds ad hoc scripts for things like backfilling data, triggering one-off jobs, or inspecting runtime state. These aren't part of the app; they're tools for managing it. Each file is a standalone script run directly with `bun run commands/some-script.ts`. For argument parsing, I use [zod-opts](https://github.com/ndaidong/zod-opts): define your args as a Zod schema and get parsed, typed values back with minimal boilerplate. No need to reach for a full CLI framework for scripts you run a handful of times.
-
-The packages are local workspace references, not published to npm. Change a shared type and every app picks it up immediately. No build pipeline, no version bumps, no publication step.
 
 ---
 
