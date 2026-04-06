@@ -61,7 +61,9 @@ const years = Object.keys(posts).sort(
   today.setHours(0, 0, 0, 0);
 
   document.querySelectorAll<HTMLLIElement>("li[data-date]").forEach((li) => {
-    if (new Date(li.dataset.date!) > today) li.hidden = true;
+    const postDate = new Date(li.dataset.date!);
+    postDate.setHours(0, 0, 0, 0);
+    if (postDate > today) li.hidden = true;
   });
 
   document.querySelectorAll<HTMLElement>("[data-year-section]").forEach((section) => {

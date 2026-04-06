@@ -125,7 +125,9 @@ const allSnowball = (await getCollection("snowball"))
     let shown = 0;
 
     items.forEach((li) => {
-      const isFuture = new Date(li.dataset.date!) > today;
+      const postDate = new Date(li.dataset.date!);
+      postDate.setHours(0, 0, 0, 0);
+      const isFuture = postDate > today;
       const overLimit = limit > 0 && shown >= limit;
       li.hidden = isFuture || overLimit;
       if (!isFuture && !overLimit) shown++;
@@ -133,7 +135,11 @@ const allSnowball = (await getCollection("snowball"))
 
     const seeAllId = ul.dataset.seeAll;
     if (seeAllId) {
-      const published = items.filter((li) => new Date(li.dataset.date!) <= today).length;
+      const published = items.filter((li) => {
+        const d = new Date(li.dataset.date!);
+        d.setHours(0, 0, 0, 0);
+        return d <= today;
+      }).length;
       const el = document.getElementById(seeAllId);
       if (el) el.hidden = published <= limit;
     }
