@@ -10,5 +10,5 @@ Guidelines:
 - Avoid short staccato sentences that just stop abruptly. Merge them into flowing sentences with connective tissue (conjunctions, transitional phrases)
 - Write like someone thinking out loud, not like a list of observations
 - Keep the original voice, ideas, and structure intact — only improve how it reads
-- Small word choices matter: prefer "feels" over "is" when describing lived experience
+- Prefer "feels" over "is" when describing lived experience
 - Let paragraphs breathe before landing on a point
