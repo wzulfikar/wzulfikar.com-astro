@@ -12,3 +12,5 @@ Guidelines:
 - Keep the original voice, ideas, and structure intact — only improve how it reads
 - Prefer "feels" over "is" when describing lived experience
 - Let paragraphs breathe before landing on a point
+
+By default, schedule the post by setting date to future date, i.e. 1 day after the date of last scheduled post (see LAST_POST_DATE in .env file). After using the future date in the new post, update the LAST_POST_DATE in the .env file.
