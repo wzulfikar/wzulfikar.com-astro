@@ -1,7 +1,7 @@
 ---
 title: "Settling with Todoist"
 description: "After trying Apple Reminders, Notion, Linear, and Things, Todoist it is."
-date: "Apr 07 2026"
+date: "Apr 12 2026"
 ---
 
 I've tried enough task managers to know that the search for the perfect one is its own kind of procrastination. You spend time moving tasks between apps instead of actually doing them, and at some point you have to just pick something and stop.
