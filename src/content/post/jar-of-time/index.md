@@ -1,5 +1,5 @@
 ---
-title: "RPS: Rock, Pebble, Sand"
+title: "Jar of Time"
 description: "A prioritization approach that helped me understand why I feel busy instead of productive."
 date: "Apr 13 2026"
 ---
