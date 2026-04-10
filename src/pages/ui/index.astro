@@ -337,17 +337,18 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 1.1rem;
     opacity: 0;
     transition: opacity 0.25s ease;
     pointer-events: none;
     text-align: left;
+    -webkit-mask-image: linear-gradient(to top, black 0%, black 25%, transparent 50%);
+    mask-image: linear-gradient(to top, black 0%, black 25%, transparent 50%);
+    backdrop-filter: blur(12px);
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.82) 0%,
-      rgba(0, 0, 0, 0.5) 30%,
-      rgba(0, 0, 0, 0.1) 60%,
-      transparent 100%
+      rgba(0, 0, 0, 0.6) 0%,
+      rgba(0, 0, 0, 0.3) 25%,
+      transparent 50%
     );
   }
 
@@ -357,6 +358,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
 
   .ui-hover-overlay h2 {
     margin: 0 0 0.35rem;
+    padding: 0 1.1rem;
     font-size: 1rem;
     font-weight: 600;
     color: #fff;
@@ -365,6 +367,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
 
   .ui-hover-overlay p {
     margin: 0;
+    padding: 0 1.1rem 1.1rem;
     font-size: 0.82rem;
     color: rgba(255, 255, 255, 0.82);
     line-height: 1.45;
