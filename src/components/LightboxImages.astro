@@ -42,6 +42,7 @@ const { images } = Astro.props;
 <div id="img-lightbox" aria-modal="true" role="dialog">
   <img id="img-lightbox-img" src="" alt="" hidden />
   <video id="img-lightbox-video" controls playsinline hidden></video>
+  <p id="img-lightbox-title" hidden></p>
   <p id="img-lightbox-caption" hidden></p>
 </div>
 
@@ -134,13 +135,29 @@ const { images } = Astro.props;
     cursor: auto;
   }
 
-  #img-lightbox p {
+  #img-lightbox-title {
     margin: 0;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.92rem;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
     text-align: center;
     max-width: 860px;
     cursor: auto;
+  }
+
+  #img-lightbox-caption {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.88rem;
+    text-align: center;
+    max-width: 860px;
+    cursor: auto;
+  }
+
+  :global(body.lb-open header),
+  :global(body.lb-open main) {
+    filter: blur(6px);
+    transition: filter 0.2s ease;
   }
 
   @keyframes lb-backdrop-in {
@@ -189,16 +206,24 @@ const { images } = Astro.props;
     const lightbox = document.getElementById("img-lightbox");
     const lbImg = document.getElementById("img-lightbox-img");
     const lbVideo = document.getElementById("img-lightbox-video");
+    const lbTitle = document.getElementById("img-lightbox-title");
     const lbCaption = document.getElementById("img-lightbox-caption");
     if (!(lightbox instanceof HTMLElement)) return;
     if (!(lbImg instanceof HTMLImageElement)) return;
     if (!(lbVideo instanceof HTMLVideoElement)) return;
+    if (!(lbTitle instanceof HTMLElement)) return;
     if (!(lbCaption instanceof HTMLElement)) return;
 
     const lightboxEl = lightbox;
     const lightboxImg = lbImg;
     const lightboxVideo = lbVideo;
+    const lightboxTitle = lbTitle;
     const lightboxCaption = lbCaption;
+
+    // Move lightbox to body so blur on <main> doesn't affect it
+    if (lightboxEl.parentElement !== document.body) {
+      document.body.appendChild(lightboxEl);
+    }
 
     function closeLightbox() {
       if (!lightboxEl.classList.contains("open")) return;
@@ -221,9 +246,13 @@ const { images } = Astro.props;
       lightboxImg.removeAttribute("src");
       lightboxImg.hidden = true;
 
+      lightboxTitle.textContent = "";
+      lightboxTitle.hidden = true;
+
       lightboxCaption.textContent = "";
       lightboxCaption.hidden = true;
 
+      document.body.classList.remove("lb-open");
       document.documentElement.style.overflow = "";
     }
 
@@ -262,10 +291,14 @@ const { images } = Astro.props;
         lightboxImg.hidden = false;
       }
 
+      lightboxTitle.textContent = alt;
+      lightboxTitle.hidden = alt.trim() === "";
+
       lightboxCaption.textContent = caption;
       lightboxCaption.hidden = caption.trim() === "";
 
       lightboxEl.classList.add("open");
+      document.body.classList.add("lb-open");
       document.documentElement.style.overflow = "hidden";
     }
 

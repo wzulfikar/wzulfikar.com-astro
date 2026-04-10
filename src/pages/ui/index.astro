@@ -168,7 +168,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
               data-lightbox-type={asset.type === "video" ? "video" : "image"}
               data-lightbox-src={asset.src}
               data-lightbox-alt={asset.title}
-              data-lightbox-caption={`${asset.description} (${asset.app} • ${asset.year} • ${asset.platform})`}
+              data-lightbox-caption={asset.description}
               data-lightbox-poster={asset.poster}
             >
               {asset.type === "video" ? (
@@ -183,30 +183,14 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
               ) : (
                 <img src={asset.src} alt={asset.title} loading="lazy" decoding="async" />
               )}
-              <span class="ui-media-type">
+              <!-- <span class="ui-media-type">
                 {asset.type === "video" ? "MP4" : asset.type === "gif" ? "GIF" : "Image"}
-              </span>
+              </span> -->
+              <div class="ui-hover-overlay">
+                <h2>{asset.title}</h2>
+                <p>{asset.description}</p>
+              </div>
             </button>
-
-            <div class="ui-content">
-              <h2 class="text-lg font-semibold text-black dark:text-white">{asset.title}</h2>
-              <p>{asset.description}</p>
-              <dl class="ui-meta">
-                <div>
-                  <dt>App</dt>
-                  <dd>{asset.app}</dd>
-                </div>
-                <div>
-                  <dt>Year</dt>
-                  <dd>{asset.year}</dd>
-                </div>
-                <div>
-                  <dt>Platform</dt>
-                  <dd>{asset.platform}</dd>
-                </div>
-              </dl>
-              <p class="ui-tags">{asset.tags.join(" · ")}</p>
-            </div>
           </li>
         ))}
       </ul>
@@ -280,15 +264,8 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
   }
 
   .ui-card {
-    border: 1px solid rgba(0, 0, 0, 0.11);
     border-radius: 0.9rem;
-    background: rgba(255, 255, 255, 0.45);
     overflow: hidden;
-  }
-
-  :global(html.dark) .ui-card {
-    border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.04);
   }
 
   .ui-preview {
@@ -299,6 +276,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     cursor: zoom-in;
     background: #111;
     position: relative;
+    display: block;
   }
 
   .ui-preview img,
@@ -307,6 +285,12 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     height: min(430px, 58vh);
     object-fit: cover;
     display: block;
+    transition: filter 0.25s ease;
+  }
+
+  .ui-preview:hover img,
+  .ui-preview:hover video {
+    filter: brightness(0.55);
   }
 
   .ui-media-type {
@@ -320,57 +304,47 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     background: rgba(0, 0, 0, 0.72);
     color: #fff;
     letter-spacing: 0.03em;
+    transition: opacity 0.25s ease;
   }
 
-  .ui-content {
+  .ui-preview:hover .ui-media-type {
+    opacity: 0;
+  }
+
+  .ui-hover-overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
-    padding: 0.9rem;
+    justify-content: flex-end;
+    padding: 1.1rem;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+    text-align: left;
   }
 
-  .ui-content p {
+  .ui-preview:hover .ui-hover-overlay {
+    opacity: 1;
+  }
+
+  .ui-hover-overlay h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .ui-hover-overlay p {
     margin: 0;
-  }
-
-  .ui-meta {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    margin: 0;
-  }
-
-  .ui-meta div {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.9rem;
-  }
-
-  .ui-meta dt {
-    color: rgba(0, 0, 0, 0.58);
-  }
-
-  .ui-meta dd {
-    margin: 0;
-    color: rgba(0, 0, 0, 0.9);
-  }
-
-  :global(html.dark) .ui-meta dt {
-    color: rgba(255, 255, 255, 0.62);
-  }
-
-  :global(html.dark) .ui-meta dd {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .ui-tags {
-    font-size: 0.8rem;
-    color: rgba(0, 0, 0, 0.65);
-  }
-
-  :global(html.dark) .ui-tags {
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .ui-empty {
