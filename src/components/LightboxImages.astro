@@ -1,6 +1,16 @@
 ---
+type LightboxType = "image" | "video";
+
+type LightboxItem = {
+	src: string;
+	alt?: string;
+	caption?: string;
+	type?: LightboxType;
+	poster?: string;
+};
+
 interface Props {
-	images?: { src: string; alt?: string }[];
+	images?: LightboxItem[];
 }
 
 const { images } = Astro.props;
@@ -8,14 +18,31 @@ const { images } = Astro.props;
 
 {images && images.length > 0 && (
   <div class="lb-images">
-    {images.map(img => (
-      <img src={img.src} alt={img.alt ?? ""} data-lightbox />
+    {images.map((item) => (
+      <button
+        type="button"
+        class="lb-trigger"
+        data-lightbox
+        data-lightbox-src={item.src}
+        data-lightbox-type={item.type ?? "image"}
+        data-lightbox-alt={item.alt ?? ""}
+        data-lightbox-caption={item.caption ?? ""}
+        data-lightbox-poster={item.poster}
+      >
+        {item.type === "video" ? (
+          <video src={item.src} poster={item.poster} muted playsinline preload="metadata" />
+        ) : (
+          <img src={item.src} alt={item.alt ?? ""} />
+        )}
+      </button>
     ))}
   </div>
 )}
 
 <div id="img-lightbox" aria-modal="true" role="dialog">
-  <img id="img-lightbox-img" src="" alt="" />
+  <img id="img-lightbox-img" src="" alt="" hidden />
+  <video id="img-lightbox-video" controls playsinline hidden></video>
+  <p id="img-lightbox-caption" hidden></p>
 </div>
 
 <style>
@@ -26,12 +53,21 @@ const { images } = Astro.props;
     gap: 1rem;
     overflow-x: auto;
   }
-  .lb-images img {
+
+  .lb-trigger {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+
+  .lb-images img,
+  .lb-images video {
     max-height: 300px;
     width: auto;
     flex-shrink: 0;
     border-radius: 0.375rem;
-    cursor: zoom-in;
     margin: 0;
   }
 
@@ -44,6 +80,7 @@ const { images } = Astro.props;
     padding-bottom: 0.25rem;
     margin-bottom: 0.5rem;
   }
+
   :global(article p:has(img) img) {
     max-height: 300px;
     width: auto;
@@ -58,85 +95,255 @@ const { images } = Astro.props;
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
     cursor: zoom-out;
   }
+
   #img-lightbox.open {
     display: flex;
     animation: lb-backdrop-in 0.2s ease;
   }
+
   #img-lightbox.closing {
     display: flex;
     animation: lb-backdrop-out 0.18s ease forwards;
   }
-  #img-lightbox.open img {
+
+  #img-lightbox.open #img-lightbox-img,
+  #img-lightbox.open #img-lightbox-video {
     animation: lb-img-in 0.2s ease;
   }
-  #img-lightbox.closing img {
+
+  #img-lightbox.closing #img-lightbox-img,
+  #img-lightbox.closing #img-lightbox-video {
     animation: lb-img-out 0.18s ease forwards;
   }
-  #img-lightbox img {
+
+  #img-lightbox img,
+  #img-lightbox video {
     max-width: 92vw;
-    max-height: 92vh;
+    max-height: 86vh;
     border-radius: 0.5rem;
     object-fit: contain;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    cursor: auto;
+  }
+
+  #img-lightbox p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.92rem;
+    text-align: center;
+    max-width: 860px;
+    cursor: auto;
   }
 
   @keyframes lb-backdrop-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
+
   @keyframes lb-backdrop-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
+
   @keyframes lb-img-in {
-    from { opacity: 0; transform: scale(0.93); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.93);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
+
   @keyframes lb-img-out {
-    from { opacity: 1; transform: scale(1); }
-    to { opacity: 0; transform: scale(0.93); }
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.93);
+    }
   }
 </style>
 
 <script>
   function initLightbox() {
-    const maybeLightbox = document.getElementById("img-lightbox");
-    const maybeLbImg = document.getElementById("img-lightbox-img") as HTMLImageElement | null;
-    if (!maybeLightbox || !maybeLbImg) return;
+    const lightbox = document.getElementById("img-lightbox");
+    const lbImg = document.getElementById("img-lightbox-img");
+    const lbVideo = document.getElementById("img-lightbox-video");
+    const lbCaption = document.getElementById("img-lightbox-caption");
+    if (!(lightbox instanceof HTMLElement)) return;
+    if (!(lbImg instanceof HTMLImageElement)) return;
+    if (!(lbVideo instanceof HTMLVideoElement)) return;
+    if (!(lbCaption instanceof HTMLElement)) return;
 
-    const lightbox = maybeLightbox!;
-    const lbImg = maybeLbImg!;
-
-    function openLightbox(img: HTMLImageElement) {
-      lbImg.src = img.src;
-      lbImg.alt = img.alt;
-      lightbox.classList.add("open");
-    }
+    const lightboxEl = lightbox;
+    const lightboxImg = lbImg;
+    const lightboxVideo = lbVideo;
+    const lightboxCaption = lbCaption;
 
     function closeLightbox() {
-      lightbox.classList.replace("open", "closing");
-      lightbox.addEventListener("animationend", () => {
-        lightbox.classList.remove("closing");
-      }, { once: true });
+      if (!lightboxEl.classList.contains("open")) return;
+
+      lightboxEl.classList.replace("open", "closing");
+      lightboxEl.addEventListener(
+        "animationend",
+        () => {
+          lightboxEl.classList.remove("closing");
+        },
+        { once: true },
+      );
+
+      lightboxVideo.pause();
+      lightboxVideo.removeAttribute("src");
+      lightboxVideo.removeAttribute("poster");
+      lightboxVideo.load();
+      lightboxVideo.hidden = true;
+
+      lightboxImg.removeAttribute("src");
+      lightboxImg.hidden = true;
+
+      lightboxCaption.textContent = "";
+      lightboxCaption.hidden = true;
+
+      document.documentElement.style.overflow = "";
     }
 
-    document.querySelectorAll("article p img").forEach(img => {
-      (img as HTMLElement).addEventListener("click", () => openLightbox(img as HTMLImageElement));
+    function openLightbox(params: {
+      src: string;
+      alt?: string;
+      type: "image" | "video";
+      caption?: string;
+      poster?: string;
+    }) {
+      const { src, alt = "", type, caption = "", poster = "" } = params;
+      if (!src) return;
+
+      if (type === "video") {
+        lightboxImg.hidden = true;
+        lightboxImg.removeAttribute("src");
+
+        lightboxVideo.src = src;
+        if (poster) {
+          lightboxVideo.poster = poster;
+        } else {
+          lightboxVideo.removeAttribute("poster");
+        }
+        lightboxVideo.hidden = false;
+        lightboxVideo.currentTime = 0;
+        lightboxVideo.play().catch(() => {});
+      } else {
+        lightboxVideo.pause();
+        lightboxVideo.removeAttribute("src");
+        lightboxVideo.removeAttribute("poster");
+        lightboxVideo.load();
+        lightboxVideo.hidden = true;
+
+        lightboxImg.src = src;
+        lightboxImg.alt = alt;
+        lightboxImg.hidden = false;
+      }
+
+      lightboxCaption.textContent = caption;
+      lightboxCaption.hidden = caption.trim() === "";
+
+      lightboxEl.classList.add("open");
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    function openFromElement(el: HTMLElement) {
+      const sourceType = el.dataset.lightboxType === "video" ? "video" : "image";
+      let source = el.dataset.lightboxSrc ?? "";
+      let alt = el.dataset.lightboxAlt ?? "";
+      let caption = el.dataset.lightboxCaption ?? "";
+      let poster = el.dataset.lightboxPoster ?? "";
+
+      if (!source && el instanceof HTMLImageElement) {
+        source = el.currentSrc || el.src;
+        alt = alt || el.alt;
+      }
+
+      if (!source && el instanceof HTMLVideoElement) {
+        source = el.currentSrc || el.src;
+        poster = poster || el.poster;
+      }
+
+      if (!source) {
+        const nestedVideo = el.querySelector("video");
+        const nestedImg = el.querySelector("img");
+
+        if (nestedVideo instanceof HTMLVideoElement) {
+          source = nestedVideo.currentSrc || nestedVideo.src;
+          poster = poster || nestedVideo.poster;
+        } else if (nestedImg instanceof HTMLImageElement) {
+          source = nestedImg.currentSrc || nestedImg.src;
+          alt = alt || nestedImg.alt;
+        }
+      }
+
+      if (caption.trim() === "") {
+        caption = "";
+      }
+
+      openLightbox({
+        src: source,
+        alt,
+        caption,
+        poster,
+        type: sourceType,
+      });
+    }
+
+    document.querySelectorAll("article p img").forEach((img) => {
+      if (!(img instanceof HTMLImageElement)) return;
+      if (img.dataset.lightboxBound === "true") return;
+      img.dataset.lightboxBound = "true";
+      img.addEventListener("click", () => openFromElement(img));
     });
 
-    document.querySelectorAll<HTMLImageElement>("[data-lightbox]").forEach(img => {
-      img.addEventListener("click", () => openLightbox(img));
+    document.querySelectorAll<HTMLElement>("[data-lightbox]").forEach((el) => {
+      if (el.dataset.lightboxBound === "true") return;
+      el.dataset.lightboxBound = "true";
+      el.addEventListener("click", (event) => {
+        event.preventDefault();
+        openFromElement(el);
+      });
     });
 
-    lightbox.addEventListener("click", closeLightbox);
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeLightbox();
-    });
+    if (lightboxEl.dataset.lightboxRootBound !== "true") {
+      lightboxEl.dataset.lightboxRootBound = "true";
+      lightboxEl.addEventListener("click", (event) => {
+        if (event.target === lightboxEl) {
+          closeLightbox();
+        }
+      });
+    }
+
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+    };
+
+    document.addEventListener("keydown", onEscape);
   }
 
   document.addEventListener("astro:after-swap", initLightbox);

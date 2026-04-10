@@ -1,0 +1,453 @@
+---
+import Container from "@components/Container.astro";
+import LightboxImages from "@components/LightboxImages.astro";
+import PageLayout from "@layouts/PageLayout.astro";
+
+type Platform = "mobile" | "web" | "desktop" | "chrome extension";
+type MediaType = "image" | "gif" | "video";
+
+type UiAsset = {
+	id: string;
+	title: string;
+	description: string;
+	app: string;
+	year: number;
+	platform: Platform;
+	type: MediaType;
+	src: string;
+	poster?: string;
+	tags: string[];
+};
+
+const assets: UiAsset[] = [
+	{
+		id: "flint-clear-weather-card",
+		title: "Weather-aware note card (clear sky)",
+		description:
+			"Mobile note card UI that blends weather context into each voice note so moments feel easier to remember.",
+		app: "Flint",
+		year: 2026,
+		platform: "mobile",
+		type: "image",
+		src: "/ui/flint-weather-clear-mobile.png",
+		tags: ["notes", "weather", "contextual ui", "voice notes"],
+	},
+	{
+		id: "flint-cloudy-weather-card",
+		title: "Weather-aware note card (cloudy)",
+		description:
+			"Alternate weather state using the same information architecture to keep readability and emotional tone consistent.",
+		app: "Flint",
+		year: 2026,
+		platform: "mobile",
+		type: "image",
+		src: "/ui/flint-weather-cloudy-mobile.png",
+		tags: ["notes", "weather", "design system", "mobile ui"],
+	},
+	{
+		id: "flint-weather-gif",
+		title: "Weather transition prototype (GIF)",
+		description:
+			"Animated transition concept that shows the clear-to-cloudy state change for the weather-aware note experience.",
+		app: "Flint",
+		year: 2026,
+		platform: "mobile",
+		type: "gif",
+		src: "/ui/flint-weather-vibe.gif",
+		tags: ["animation", "micro interaction", "gif", "prototype"],
+	},
+	{
+		id: "flint-weather-video",
+		title: "Weather transition demo (MP4)",
+		description:
+			"Short product clip that demonstrates pacing and motion for the weather context in the note flow.",
+		app: "Flint",
+		year: 2026,
+		platform: "mobile",
+		type: "video",
+		src: "/ui/flint-weather-vibe.mp4",
+		poster: "/ui/flint-weather-clear-mobile.png",
+		tags: ["motion", "prototype", "mp4", "interaction"],
+	},
+	{
+		id: "wzulfikar-home-web",
+		title: "Personal site home layout",
+		description:
+			"Homepage layout for wzulfikar.com focused on clear content hierarchy across writing, projects, and reusable patterns.",
+		app: "wzulfikar.com",
+		year: 2026,
+		platform: "web",
+		type: "image",
+		src: "/ui/wzulfikar-home-web.png",
+		tags: ["homepage", "information architecture", "web ui"],
+	},
+	{
+		id: "wzulfikar-hero-concept",
+		title: "Hero visual exploration",
+		description:
+			"Visual direction study used to set tone and identity for the landing experience of the personal website.",
+		app: "wzulfikar.com",
+		year: 2026,
+		platform: "web",
+		type: "image",
+		src: "/ui/wzulfikar-hero-concept.jpg",
+		tags: ["hero", "visual design", "branding", "web"],
+	},
+];
+
+const platformOptions = ["all", "mobile", "web", "desktop", "chrome extension"] as const;
+const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) => b - a);
+---
+
+<PageLayout
+	title="UI"
+	description="Searchable UI/UX archive with visual assets, descriptions, and metadata."
+>
+  <Container>
+    <section class="space-y-6" data-ui-gallery-root>
+      <div class="animate space-y-2">
+        <h1 class="text-3xl font-semibold text-black dark:text-white">UI / UX Archive</h1>
+        <p>
+          A searchable catalog of visual work with descriptions and metadata across app name, year,
+          and platform.
+        </p>
+      </div>
+
+      <div class="animate ui-toolbar">
+        <label class="ui-field">
+          <span>Search</span>
+          <input
+            id="ui-search"
+            type="search"
+            placeholder="Search by description, app, year, platform, or tags"
+          />
+        </label>
+        <label class="ui-field">
+          <span>Platform</span>
+          <select id="ui-platform">
+            {platformOptions.map((platform) => (
+              <option value={platform}>
+                {platform === "all" ? "All platforms" : platform}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label class="ui-field">
+          <span>Year</span>
+          <select id="ui-year">
+            <option value="all">All years</option>
+            {yearOptions.map((year) => (
+              <option value={year.toString()}>{year}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <p id="ui-results" class="animate ui-results"></p>
+
+      <ul class="ui-grid">
+        {assets.map((asset) => (
+          <li
+            class="animate ui-card"
+            data-asset-card
+            data-platform={asset.platform}
+            data-year={asset.year.toString()}
+            data-search-text={[
+              asset.title,
+              asset.description,
+              asset.app,
+              asset.year.toString(),
+              asset.platform,
+              ...asset.tags,
+            ].join(" ").toLowerCase()}
+          >
+            <button
+              type="button"
+              class="ui-preview"
+              data-lightbox
+              data-lightbox-type={asset.type === "video" ? "video" : "image"}
+              data-lightbox-src={asset.src}
+              data-lightbox-alt={asset.title}
+              data-lightbox-caption={`${asset.description} (${asset.app} • ${asset.year} • ${asset.platform})`}
+              data-lightbox-poster={asset.poster}
+            >
+              {asset.type === "video" ? (
+                <video
+                  src={asset.src}
+                  poster={asset.poster}
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                />
+              ) : (
+                <img src={asset.src} alt={asset.title} loading="lazy" decoding="async" />
+              )}
+              <span class="ui-media-type">
+                {asset.type === "video" ? "MP4" : asset.type === "gif" ? "GIF" : "Image"}
+              </span>
+            </button>
+
+            <div class="ui-content">
+              <h2 class="text-lg font-semibold text-black dark:text-white">{asset.title}</h2>
+              <p>{asset.description}</p>
+              <dl class="ui-meta">
+                <div>
+                  <dt>App</dt>
+                  <dd>{asset.app}</dd>
+                </div>
+                <div>
+                  <dt>Year</dt>
+                  <dd>{asset.year}</dd>
+                </div>
+                <div>
+                  <dt>Platform</dt>
+                  <dd>{asset.platform}</dd>
+                </div>
+              </dl>
+              <p class="ui-tags">{asset.tags.join(" · ")}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <p id="ui-empty" class="ui-empty" hidden>No assets match the current filters.</p>
+      <LightboxImages />
+    </section>
+  </Container>
+</PageLayout>
+
+<style>
+  .ui-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .ui-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+  }
+
+  .ui-field span {
+    color: rgba(0, 0, 0, 0.75);
+    font-weight: 600;
+  }
+
+  :global(html.dark) .ui-field span {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .ui-field input,
+  .ui-field select {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 0.625rem;
+    background: rgba(255, 255, 255, 0.6);
+    color: inherit;
+    padding: 0.6rem 0.75rem;
+    outline: none;
+  }
+
+  .ui-field input:focus,
+  .ui-field select:focus {
+    border-color: rgba(0, 0, 0, 0.28);
+  }
+
+  :global(html.dark) .ui-field input,
+  :global(html.dark) .ui-field select {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  :global(html.dark) .ui-field input:focus,
+  :global(html.dark) .ui-field select:focus {
+    border-color: rgba(255, 255, 255, 0.38);
+  }
+
+  .ui-results {
+    font-size: 0.95rem;
+  }
+
+  .ui-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ui-card {
+    border: 1px solid rgba(0, 0, 0, 0.11);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+  }
+
+  :global(html.dark) .ui-card {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .ui-preview {
+    width: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: zoom-in;
+    background: #111;
+    position: relative;
+  }
+
+  .ui-preview img,
+  .ui-preview video {
+    width: 100%;
+    height: min(430px, 58vh);
+    object-fit: cover;
+    display: block;
+  }
+
+  .ui-media-type {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    letter-spacing: 0.03em;
+  }
+
+  .ui-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.9rem;
+  }
+
+  .ui-content p {
+    margin: 0;
+  }
+
+  .ui-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .ui-meta div {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .ui-meta dt {
+    color: rgba(0, 0, 0, 0.58);
+  }
+
+  .ui-meta dd {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  :global(html.dark) .ui-meta dt {
+    color: rgba(255, 255, 255, 0.62);
+  }
+
+  :global(html.dark) .ui-meta dd {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .ui-tags {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  :global(html.dark) .ui-tags {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .ui-empty {
+    padding: 0.85rem;
+    border-radius: 0.75rem;
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  :global(html.dark) .ui-empty {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  @media (min-width: 720px) {
+    .ui-toolbar {
+      grid-template-columns: 1.6fr 0.8fr 0.7fr;
+      align-items: end;
+    }
+
+    .ui-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>
+
+<script>
+  function initUiGalleryFilters() {
+    const root = document.querySelector("[data-ui-gallery-root]");
+    if (!(root instanceof HTMLElement) || root.dataset.uiFiltersInitialized === "true") {
+      return;
+    }
+    root.dataset.uiFiltersInitialized = "true";
+
+    const search = root.querySelector("#ui-search");
+    const platform = root.querySelector("#ui-platform");
+    const year = root.querySelector("#ui-year");
+    const cards = [...root.querySelectorAll("[data-asset-card]")];
+    const results = root.querySelector("#ui-results");
+    const empty = root.querySelector("#ui-empty");
+
+    function updateFilters() {
+      const searchValue = search instanceof HTMLInputElement ? search.value.trim().toLowerCase() : "";
+      const platformValue = platform instanceof HTMLSelectElement ? platform.value : "all";
+      const yearValue = year instanceof HTMLSelectElement ? year.value : "all";
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        if (!(card instanceof HTMLElement)) return;
+        const text = card.dataset.searchText ?? "";
+        const cardPlatform = card.dataset.platform ?? "";
+        const cardYear = card.dataset.year ?? "";
+
+        const matchesSearch = searchValue === "" || text.includes(searchValue);
+        const matchesPlatform = platformValue === "all" || cardPlatform === platformValue;
+        const matchesYear = yearValue === "all" || cardYear === yearValue;
+        const visible = matchesSearch && matchesPlatform && matchesYear;
+
+        card.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      if (results instanceof HTMLElement) {
+        results.textContent = `${visibleCount} asset${visibleCount === 1 ? "" : "s"} shown`;
+      }
+
+      if (empty instanceof HTMLElement) {
+        empty.hidden = visibleCount > 0;
+      }
+    }
+
+    [search, platform, year].forEach((input) => {
+      if (!input) return;
+      input.addEventListener("input", updateFilters);
+      input.addEventListener("change", updateFilters);
+    });
+    updateFilters();
+  }
+
+  document.addEventListener("astro:after-swap", initUiGalleryFilters);
+  initUiGalleryFilters();
+</script>
