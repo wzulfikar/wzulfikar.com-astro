@@ -16,6 +16,7 @@ type UiAsset = {
 	type: MediaType;
 	src: string;
 	poster?: string;
+	landscape?: boolean;
 	tags: string[];
 };
 
@@ -79,6 +80,7 @@ const assets: UiAsset[] = [
 		platform: "web",
 		type: "image",
 		src: "/ui/wzulfikar-home-web.png",
+		landscape: true,
 		tags: ["homepage", "information architecture", "web ui"],
 	},
 	{
@@ -91,6 +93,7 @@ const assets: UiAsset[] = [
 		platform: "web",
 		type: "image",
 		src: "/ui/wzulfikar-hero-concept.jpg",
+		landscape: true,
 		tags: ["hero", "visual design", "branding", "web"],
 	},
 ];
@@ -148,7 +151,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
       <ul class="ui-grid">
         {assets.map((asset) => (
           <li
-            class="animate ui-card"
+            class:list={["animate ui-card", { "ui-card--landscape": asset.landscape }]}
             data-asset-card
             data-platform={asset.platform}
             data-year={asset.year.toString()}
@@ -268,6 +271,23 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     overflow: hidden;
   }
 
+  .ui-card--landscape .ui-preview img,
+  .ui-card--landscape .ui-preview video {
+    height: min(320px, 45vw);
+    object-position: center top;
+  }
+
+  @media (min-width: 720px) {
+    .ui-card--landscape {
+      grid-column: span 2;
+    }
+
+    .ui-card--landscape .ui-preview img,
+    .ui-card--landscape .ui-preview video {
+      height: min(400px, 40vw);
+    }
+  }
+
   .ui-preview {
     width: 100%;
     border: 0;
@@ -290,7 +310,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
 
   .ui-preview:hover img,
   .ui-preview:hover video {
-    filter: brightness(0.55);
+    filter: brightness(0.85);
   }
 
   .ui-media-type {
@@ -322,6 +342,13 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
     transition: opacity 0.25s ease;
     pointer-events: none;
     text-align: left;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.82) 0%,
+      rgba(0, 0, 0, 0.5) 30%,
+      rgba(0, 0, 0, 0.1) 60%,
+      transparent 100%
+    );
   }
 
   .ui-preview:hover .ui-hover-overlay {
