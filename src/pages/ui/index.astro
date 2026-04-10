@@ -37,7 +37,7 @@ const assets: UiAsset[] = [
 		id: "flint-cloudy-weather-card",
 		title: "Weather-aware note card (cloudy)",
 		description:
-			"Alternate weather state using the same information architecture to keep readability and emotional tone consistent.",
+			"Alternate weather state using the same information architecture to keep readability and emotional tone.",
 		app: "Flint",
 		year: 2026,
 		platform: "mobile",
@@ -275,6 +275,10 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
   .ui-card--landscape .ui-preview video {
     height: min(320px, 45vw);
     object-position: center top;
+  }
+
+  .ui-card--landscape .ui-hover-overlay p {
+    -webkit-line-clamp: 2;
   }
 
   @media (min-width: 720px) {
