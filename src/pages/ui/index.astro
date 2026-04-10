@@ -98,7 +98,13 @@ const assets: UiAsset[] = [
 	},
 ];
 
-const platformOptions = ["all", "mobile", "web", "desktop", "chrome extension"] as const;
+const platformOptions = [
+  "all",
+  "mobile",
+  "web",
+  "desktop",
+  // "chrome extension"
+] as const;
 const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) => b - a);
 ---
 
@@ -198,7 +204,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
         ))}
       </ul>
 
-      <p id="ui-empty" class="ui-empty" hidden>No assets match the current filters.</p>
+      <p id="ui-empty" class="ui-empty" hidden>No assets match the current search.</p>
       <LightboxImages />
     </section>
   </Container>
@@ -440,7 +446,7 @@ const yearOptions = [...new Set(assets.map((asset) => asset.year))].sort((a, b) 
       });
 
       if (results instanceof HTMLElement) {
-        results.textContent = `${visibleCount} asset${visibleCount === 1 ? "" : "s"} shown`;
+        results.textContent = visibleCount ? `Showing ${visibleCount} asset${visibleCount === 1 ? "" : "s"}`:''
       }
 
       if (empty instanceof HTMLElement) {
