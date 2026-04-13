@@ -7,3 +7,4 @@ date: "Jan 01 2026"
 1. Don't overthink.
 2. Don't be afraid to try new thing.
 3. Mind your own business.
+4. Timing is part of alignment.
