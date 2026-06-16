@@ -59,6 +59,9 @@ type Settings = {
 	brightness: number;
 	contrast: number;
 	saturation: number;
+	bgBrightness: number;
+	bgContrast: number;
+	bgSaturation: number;
 	screenshotAbove: boolean;
 };
 
@@ -84,6 +87,9 @@ const DEFAULT_SETTINGS: Settings = {
 	brightness: 0.78,
 	contrast: 1.08,
 	saturation: 0.86,
+	bgBrightness: 1,
+	bgContrast: 1,
+	bgSaturation: 1,
 	screenshotAbove: false,
 };
 
@@ -176,6 +182,9 @@ function createVideoCompositor({
       uniform float u_brightness;
       uniform float u_contrast;
       uniform float u_saturation;
+      uniform float u_bgBrightness;
+      uniform float u_bgContrast;
+      uniform float u_bgSaturation;
       uniform vec2 u_textureSize;
       uniform float u_cornerRadius;
 
@@ -213,6 +222,11 @@ function createVideoCompositor({
           float luminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
           color.rgb = mix(vec3(luminance), color.rgb, u_saturation);
           color.a *= u_opacity;
+        } else {
+          color.rgb *= u_bgBrightness;
+          color.rgb = (color.rgb - 0.5) * u_bgContrast + 0.5;
+          float bgLuminance = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+          color.rgb = mix(vec3(bgLuminance), color.rgb, u_bgSaturation);
         }
         gl_FragColor = color;
       }
@@ -234,6 +248,7 @@ function createVideoCompositor({
 		new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
 		gl.STATIC_DRAW,
 	);
+	// biome-ignore lint/correctness/useHookAtTopLevel: gl.useProgram is a WebGL API call, not a React hook
 	gl.useProgram(program);
 	const positionLocation = gl.getAttribLocation(program, "a_position");
 	gl.enableVertexAttribArray(positionLocation);
@@ -246,6 +261,9 @@ function createVideoCompositor({
 	const brightnessLocation = gl.getUniformLocation(program, "u_brightness");
 	const contrastLocation = gl.getUniformLocation(program, "u_contrast");
 	const saturationLocation = gl.getUniformLocation(program, "u_saturation");
+	const bgBrightnessLocation = gl.getUniformLocation(program, "u_bgBrightness");
+	const bgContrastLocation = gl.getUniformLocation(program, "u_bgContrast");
+	const bgSaturationLocation = gl.getUniformLocation(program, "u_bgSaturation");
 	const textureSizeLocation = gl.getUniformLocation(program, "u_textureSize");
 	const cornerRadiusLocation = gl.getUniformLocation(program, "u_cornerRadius");
 	gl.uniform2f(canvasSizeLocation, artboardSize.width, artboardSize.height);
@@ -254,6 +272,9 @@ function createVideoCompositor({
 	gl.uniform1f(brightnessLocation, settings.brightness);
 	gl.uniform1f(contrastLocation, settings.contrast);
 	gl.uniform1f(saturationLocation, settings.saturation);
+	gl.uniform1f(bgBrightnessLocation, settings.bgBrightness);
+	gl.uniform1f(bgContrastLocation, settings.bgContrast);
+	gl.uniform1f(bgSaturationLocation, settings.bgSaturation);
 	gl.uniform2f(textureSizeLocation, screenshotSize.width, screenshotSize.height);
 	gl.uniform1f(cornerRadiusLocation, settings.cornerRadius);
 
@@ -323,6 +344,9 @@ function readSettingsFromUrl(): Settings {
 		brightness: readNumber("brightness", DEFAULT_SETTINGS.brightness),
 		contrast: readNumber("contrast", DEFAULT_SETTINGS.contrast),
 		saturation: readNumber("saturation", DEFAULT_SETTINGS.saturation),
+		bgBrightness: readNumber("bgBrightness", DEFAULT_SETTINGS.bgBrightness),
+		bgContrast: readNumber("bgContrast", DEFAULT_SETTINGS.bgContrast),
+		bgSaturation: readNumber("bgSaturation", DEFAULT_SETTINGS.bgSaturation),
 		screenshotAbove: params.get("layer") === "above",
 	};
 }
@@ -341,6 +365,9 @@ function settingsToParams(settings: Settings) {
 	params.set("brightness", settings.brightness.toFixed(2));
 	params.set("contrast", settings.contrast.toFixed(2));
 	params.set("saturation", settings.saturation.toFixed(2));
+	params.set("bgBrightness", settings.bgBrightness.toFixed(2));
+	params.set("bgContrast", settings.bgContrast.toFixed(2));
+	params.set("bgSaturation", settings.bgSaturation.toFixed(2));
 	params.set("layer", settings.screenshotAbove ? "above" : "below");
 	return params;
 }
@@ -368,6 +395,9 @@ export default function CutoutPage() {
 	const [cropBadgeEditor, setCropBadgeEditor] = useState<"ratio" | "dimensions" | null>(null);
 	const [cropBadgeDraft, setCropBadgeDraft] = useState("");
 	const [showGuides, setShowGuides] = useState(false);
+	// Which layer the adjustment sliders target. "background" = the mockup PNG,
+	// "image" = the projected screenshot/recording. UI-only, not persisted.
+	const [adjustTarget, setAdjustTarget] = useState<"background" | "image">("background");
 	const [copied, setCopied] = useState<"url" | "params" | null>(null);
 	const [isDownloading, setIsDownloading] = useState(false);
 	// Pill feedback: render progress (0–1) for video, and a brief "Done √" flash.
@@ -906,8 +936,10 @@ export default function CutoutPage() {
 					artboardSize,
 				});
 				const outputCanvas = document.createElement("canvas");
-				outputCanvas.width = cropRect.width;
-				outputCanvas.height = cropRect.height;
+				// The H.264 (avc) encoder rejects odd dimensions — both width and
+				// height must be even. Round down so a 1280×811 crop becomes 1280×810.
+				outputCanvas.width = Math.floor(cropRect.width / 2) * 2;
+				outputCanvas.height = Math.floor(cropRect.height / 2) * 2;
 				const outputContext = outputCanvas.getContext("2d");
 				if (!outputContext) throw new Error("Could not create video crop canvas.");
 				outputContext.imageSmoothingEnabled = true;
@@ -986,7 +1018,7 @@ export default function CutoutPage() {
 	// Usage card is collapsed by default on mobile to save vertical space; it is
 	// always shown on desktop (xl) regardless of this state.
 	const [usageOpen, setUsageOpen] = useState(false);
-	const headerRef = useRef<HTMLDivElement>(null);
+	const headerRef = useRef<HTMLElement>(null);
 	useEffect(() => {
 		const header = headerRef.current;
 		if (!header) return;
@@ -1000,15 +1032,15 @@ export default function CutoutPage() {
 
 	return (
 		<div className="relative isolate min-h-screen bg-[#11100f] px-4 pb-5 text-[#eee9e2] sm:px-6 lg:px-8 xl:px-12">
-			{/* Header backdrop — gradient + blur layered IN FRONT of the panel (z-20,
-				below the z-30 header text). Panel cards scroll underneath it and get
-				faded + blurred toward the header, so the sticky title/Home keep good
-				contrast. Its height matches the header bar and is cancelled by a
-				negative bottom margin so it overlaps the bar below instead of adding
-				extra flow space. */}
+			{/* Header backdrop — gradient + blur that sits BEHIND the panel (z-0) so
+				cards scroll up over it for an immersive feel. Kept behind the content:
+				a blurred layer painted in front (z-20) over the scrollable grid swallows
+				touch scrolling on mobile, so the panel stops scrolling. Its height
+				matches the header bar and is cancelled by a negative bottom margin so it
+				overlaps the bar below instead of adding extra flow space. */}
 			<div
 				aria-hidden="true"
-				className="pointer-events-none sticky top-0 z-20 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
+				className="pointer-events-none sticky top-0 z-0 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
 				style={{
 					height: "var(--cutout-header-h, 76px)",
 					marginBottom: "calc(-1 * var(--cutout-header-h, 76px))",
@@ -1022,9 +1054,8 @@ export default function CutoutPage() {
 			{/* Title + Home — on TOP of the panel (z-30) but transparent, so panel
 				cards scroll through the gaps; only the text and Home pill stay above.
 				Empty areas pass pointer events through to the cards behind. */}
-			<div
+			<header
 				ref={headerRef}
-				role="banner"
 				className="pointer-events-none sticky top-0 z-30 flex items-start justify-between gap-4 pt-6 pb-4 xl:mx-auto xl:max-w-[1200px] xl:pt-6 xl:pb-6"
 			>
 				<div className="pointer-events-auto">
@@ -1041,7 +1072,7 @@ export default function CutoutPage() {
 					<HomeIcon className="h-4 w-4" />
 					Home
 				</a>
-			</div>
+			</header>
 
 			<div className="relative z-10 mx-auto grid max-w-[1200px] items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
 				<div className="contents xl:flex xl:flex-col xl:gap-5 xl:sticky xl:top-[var(--cutout-header-h,0px)] xl:self-start">
@@ -1108,6 +1139,9 @@ export default function CutoutPage() {
 									alt="Hand holding a phone with a transparent display"
 									draggable={false}
 									className="pointer-events-none absolute inset-0 z-10 h-full w-full select-none"
+									style={{
+										filter: `brightness(${settings.bgBrightness}) contrast(${settings.bgContrast}) saturate(${settings.bgSaturation})`,
+									}}
 								/>
 
 								<svg
@@ -1243,6 +1277,7 @@ export default function CutoutPage() {
 								)}
 
 								{frameRatio !== "original" && (
+									// biome-ignore lint/a11y/useSemanticElements: draggable crop frame that contains nested buttons, so it can't be a <button>
 									<div
 										data-export-ignore
 										role="button"
@@ -1314,11 +1349,14 @@ export default function CutoutPage() {
 											const hitSize = 18 / scale;
 
 											return (
+												// biome-ignore lint/a11y/useSemanticElements: pointer-drag resize handle, not an <hr>
+												// biome-ignore lint/a11y/useFocusableInteractive: pointer-only resize handle with no keyboard affordance
 												<div
 													key={edge}
 													role="separator"
 													aria-label={`Resize export frame ${edge} edge`}
 													aria-orientation={horizontal ? "horizontal" : "vertical"}
+													aria-valuenow={horizontal ? cropRect.height : cropRect.width}
 													onPointerDown={(event) => startCropEdgeDrag(edge, event)}
 													onPointerMove={moveCropEdge}
 													onPointerUp={() => {
@@ -1427,7 +1465,7 @@ export default function CutoutPage() {
 							onClick={() => backgroundInputRef.current?.click()}
 							className="rounded-xl border border-white/10 px-3 py-2.5 text-left hover:bg-white/5"
 						>
-							<span className="block text-sm font-semibold">Select background</span>
+							<span className="block text-sm font-semibold">Select background image</span>
 							<span className="block truncate text-[11px] text-[#77726b]">
 								{backgroundName} · {artboardSize.width}×{artboardSize.height}
 							</span>
@@ -1445,7 +1483,7 @@ export default function CutoutPage() {
 							onClick={() => screenshotInputRef.current?.click()}
 							className="rounded-xl border border-white/10 px-3 py-2.5 text-left hover:bg-white/5"
 						>
-							<span className="block text-sm font-semibold">Select screenshot / recording</span>
+							<span className="block text-sm font-semibold">Select screenshot or recording</span>
 							<span className="block truncate text-[11px] text-[#77726b]">
 								{screenshotName} · {mediaKind} · {screenshotSize.width}×{screenshotSize.height}
 							</span>
@@ -1528,7 +1566,7 @@ export default function CutoutPage() {
 
 					<div className="my-5 h-px bg-white/10" />
 
-					<fieldset className="mb-4 grid gap-2">
+					<fieldset className="mb-4 grid gap-3">
 						<legend className="flex w-full items-center justify-between text-xs text-[#aaa49b]">
 							Frame ratio
 							<span className="font-mono text-[#77726b]">
@@ -1574,13 +1612,13 @@ export default function CutoutPage() {
 												: "border-white/10 text-[#77726b] hover:border-white/25 hover:text-[#aaa49b]"
 										}`}
 									>
-										<span className="grid h-7 w-10 place-items-center">
+										<span className="grid h-5 w-8 place-items-center">
 											<span
 												className="block rounded-[2px] border border-current"
 												style={
 													visualRatio >= 1
-														? { width: 28, height: 28 / visualRatio }
-														: { width: 28 * visualRatio, height: 28 }
+														? { width: 20, height: 20 / visualRatio }
+														: { width: 20 * visualRatio, height: 20 }
 												}
 											/>
 										</span>
@@ -1594,65 +1632,118 @@ export default function CutoutPage() {
 						</div>
 					</fieldset>
 
+					<fieldset className="mb-4 grid gap-3">
+						<legend className="text-xs text-[#aaa49b]">Adjust</legend>
+						<div className="grid grid-cols-2 gap-1.5">
+							{(
+								[
+									{ value: "background", label: "Background" },
+									{ value: "image", label: mediaKind === "video" ? "Recording" : "Image" },
+								] as const
+							).map(({ value, label }) => {
+								const selected = adjustTarget === value;
+								return (
+									<button
+										key={value}
+										type="button"
+										aria-pressed={selected}
+										onClick={() => setAdjustTarget(value)}
+										className={`rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
+											selected
+												? "border-[#ffb43e] bg-[#ffb43e]/10 text-[#ffb43e]"
+												: "border-white/10 text-[#77726b] hover:border-white/25 hover:text-[#aaa49b]"
+										}`}
+									>
+										{label}
+									</button>
+								);
+							})}
+						</div>
+					</fieldset>
+
 					<div className="grid gap-4">
-						<RangeControl
-							label="Scale"
-							value={settings.projectionScale}
-							min={0.5}
-							max={1.5}
-							step={0.01}
-							onChange={scaleProjection}
-							onChangeStart={beginHistoryTransaction}
-							onChangeEnd={endHistoryTransaction}
-						/>
-						<RangeControl
-							label="Corner radius"
-							value={settings.cornerRadius}
-							min={0}
-							max={Math.floor(Math.min(screenshotSize.width, screenshotSize.height) / 2)}
-							step={1}
-							fractionDigits={0}
-							onChange={(cornerRadius) => setSettings((current) => ({ ...current, cornerRadius }))}
-							onChangeStart={beginHistoryTransaction}
-							onChangeEnd={endHistoryTransaction}
-						/>
-						<RangeControl
-							label="Opacity"
-							value={settings.opacity}
-							min={0}
-							max={1}
-							step={0.01}
-							onChange={(opacity) => setSettings((current) => ({ ...current, opacity }))}
-							onChangeStart={beginHistoryTransaction}
-							onChangeEnd={endHistoryTransaction}
-						/>
+						{adjustTarget === "image" && (
+							<>
+								<RangeControl
+									label="Scale"
+									value={settings.projectionScale}
+									min={0.5}
+									max={1.5}
+									step={0.01}
+									onChange={scaleProjection}
+									onChangeStart={beginHistoryTransaction}
+									onChangeEnd={endHistoryTransaction}
+								/>
+								<RangeControl
+									label="Corner radius"
+									value={settings.cornerRadius}
+									min={0}
+									max={Math.floor(Math.min(screenshotSize.width, screenshotSize.height) / 2)}
+									step={1}
+									fractionDigits={0}
+									onChange={(cornerRadius) =>
+										setSettings((current) => ({ ...current, cornerRadius }))
+									}
+									onChangeStart={beginHistoryTransaction}
+									onChangeEnd={endHistoryTransaction}
+								/>
+								<RangeControl
+									label="Opacity"
+									value={settings.opacity}
+									min={0}
+									max={1}
+									step={0.01}
+									onChange={(opacity) => setSettings((current) => ({ ...current, opacity }))}
+									onChangeStart={beginHistoryTransaction}
+									onChangeEnd={endHistoryTransaction}
+								/>
+							</>
+						)}
 						<RangeControl
 							label="Brightness"
-							value={settings.brightness}
+							value={adjustTarget === "image" ? settings.brightness : settings.bgBrightness}
 							min={0.4}
 							max={1.4}
 							step={0.01}
-							onChange={(brightness) => setSettings((current) => ({ ...current, brightness }))}
+							onChange={(value) =>
+								setSettings((current) =>
+									adjustTarget === "image"
+										? { ...current, brightness: value }
+										: { ...current, bgBrightness: value },
+								)
+							}
 							onChangeStart={beginHistoryTransaction}
 							onChangeEnd={endHistoryTransaction}
 						/>
 						<RangeControl
 							label="Contrast"
-							value={settings.contrast}
+							value={adjustTarget === "image" ? settings.contrast : settings.bgContrast}
 							min={0.5}
 							max={1.5}
 							step={0.01}
-							onChange={(contrast) => setSettings((current) => ({ ...current, contrast }))}
+							onChange={(value) =>
+								setSettings((current) =>
+									adjustTarget === "image"
+										? { ...current, contrast: value }
+										: { ...current, bgContrast: value },
+								)
+							}
 							onChangeStart={beginHistoryTransaction}
 							onChangeEnd={endHistoryTransaction}
 						/>
 						<RangeControl
 							label="Saturation"
-							value={settings.saturation}
+							value={adjustTarget === "image" ? settings.saturation : settings.bgSaturation}
 							min={0}
 							max={1.5}
 							step={0.01}
-							onChange={(saturation) => setSettings((current) => ({ ...current, saturation }))}
+							onChange={(value) =>
+								setSettings((current) =>
+									adjustTarget === "image"
+										? { ...current, saturation: value }
+										: { ...current, bgSaturation: value },
+								)
+							}
 							onChangeStart={beginHistoryTransaction}
 							onChangeEnd={endHistoryTransaction}
 						/>

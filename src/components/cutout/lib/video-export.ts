@@ -56,7 +56,17 @@ export async function exportCompositeVideo({
 		output.addVideoTrack(canvasSource);
 		await output.start();
 
-		const totalDuration = onProgress ? await inputTrack.computeDuration() : 0;
+		// Best-effort duration for the progress pill. computeDuration() walks the
+		// track to the last sample and can reject for some files/containers — it
+		// must never break the export, so fall back to no progress animation.
+		let totalDuration = 0;
+		if (onProgress) {
+			try {
+				totalDuration = await inputTrack.computeDuration();
+			} catch {
+				totalDuration = 0;
+			}
+		}
 
 		const sink = new VideoSampleSink(inputTrack);
 		let firstTimestamp: number | null = null;

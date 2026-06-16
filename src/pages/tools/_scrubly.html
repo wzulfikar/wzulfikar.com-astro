@@ -103,7 +103,7 @@
     <canvas id="stageCanvas"></canvas>
     <img id="imgB" alt="" style="display:none">
     <img id="imgA" alt="" style="display:none">
-    <button class="dlpill" id="dlBtn"><span class="lbl" id="dlLbl">Download</span></button>
+    <button type="button" class="dlpill" id="dlBtn"><span class="lbl" id="dlLbl">Download</span></button>
   </div>
 
   <div class="striprow">
@@ -111,8 +111,8 @@
     <div class="strip-ctrl">
       <div class="pr-row">
         <label class="lp"><input type="checkbox" id="loop"> Loop</label>
-        <button class="play" id="play">▶ Play</button>
-        <button class="ghost" id="reset"><span class="ic">↺</span> Reset</button>
+        <button type="button" class="play" id="play">▶ Play</button>
+        <button type="button" class="ghost" id="reset"><span class="ic">↺</span> Reset</button>
       </div>
     </div>
     <div class="striphint">Click a thumbnail to replace it · the active one (outlined) is being previewed · + adds another step</div>
@@ -136,7 +136,7 @@
   <div class="controls" id="variants"></div>
   <div class="vardesc-row">
     <div class="vardesc" id="vardesc"></div>
-    <button class="copypill" id="copyBtn"><span class="lbl" id="copyLbl">Copy prompt</span></button>
+    <button type="button" class="copypill" id="copyBtn"><span class="lbl" id="copyLbl">Copy prompt</span></button>
   </div>
   </div>
 </div>
@@ -210,8 +210,7 @@ function contentRect(img,W,H){
 // ---- Unified canvas drawing helpers ----
 // drawImg: draw image with object-fit:cover into (ctx) of WxH, with options.
 //   {alpha, blur, scale, tx, ty (fractions of W/H), clip:[l,r] (frac of W), pixel (px block size)}
-function drawImg(ctx,img,W,H,o){
-  o=o||{};
+function drawImg(ctx,img,W,H,o={}){
   ctx.save();
   if(o.clip){
     const l=o.clip[0]*W;
@@ -600,14 +599,14 @@ async function downloadVideo(){
     rec.start();
 
     // render frames paced to real time so MediaRecorder samples them
-    function paramsAt(g){
+    const paramsAt=(g)=>{
       const scaled=g*segN;
       const i=Math.min(Math.floor(scaled), segN-1);
       const local=scaled-i;
       const fromIdx=i;
       const toIdx=(i+1)%imgs.length;
       return {from:imgs[fromIdx], to:imgs[toIdx], e:(VARIANTS[current].ease||ease)(local)};
-    }
+    };
 
     const startT=performance.now();
     await new Promise(resolve=>{
