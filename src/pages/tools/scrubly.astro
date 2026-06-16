@@ -1,0 +1,6 @@
+---
+// Standalone self-contained artifact (own <html>/<head>/styles/scripts).
+// Served verbatim at /tool/scrubly — no PageLayout wrapping so its theme stays intact.
+import html from "./_scrubly.html?raw";
+---
+<Fragment set:html={html} />

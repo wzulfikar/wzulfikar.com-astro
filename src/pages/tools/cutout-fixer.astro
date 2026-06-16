@@ -1,0 +1,27 @@
+---
+// Standalone React island — the tool owns its full-screen UI, so no PageLayout
+// wrapping. Tailwind classes resolve via the global stylesheet.
+import CutoutFixerApp from "../../components/cutout/CutoutFixer.tsx";
+import "../../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Cutout Fixer</title>
+		<style is:global>
+			/* Match the tool's dark surface so no light page background shows
+			   below the sticky preview column or past the scroll. */
+			html,
+			body {
+				background: #11100f;
+				color-scheme: dark;
+			}
+		</style>
+	</head>
+	<body>
+		<CutoutFixerApp client:only="react" />
+	</body>
+</html>

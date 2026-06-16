@@ -1,4 +1,5 @@
 import mdx from "@astrojs/mdx";
+import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -6,7 +7,7 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
 	site: "https://wzulfikar.com",
 	prefetch: true,
-	integrations: [mdx(), sitemap()],
+	integrations: [mdx(), react(), sitemap()],
 	vite: {
 		plugins: [tailwindcss()],
 	},
