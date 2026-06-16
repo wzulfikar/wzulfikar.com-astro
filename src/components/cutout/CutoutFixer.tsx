@@ -1051,7 +1051,8 @@ export default function CutoutPage() {
 										muted
 										playsInline
 										disablePictureInPicture
-										className="pointer-events-none absolute left-0 top-0 max-w-none"
+										disableRemotePlayback
+										className="pointer-events-none absolute left-0 top-0 max-w-none [&::-webkit-media-controls-overlay-play-button]:!hidden [&::-webkit-media-controls-start-playback-button]:!hidden [&::-webkit-media-controls]:!hidden"
 										style={{
 											width: screenshotSize.width,
 											height: screenshotSize.height,

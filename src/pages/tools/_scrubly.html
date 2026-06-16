@@ -34,7 +34,10 @@
   .strip{display:flex;gap:10px;align-items:center;flex:1 1 auto;flex-wrap:wrap;min-width:0;}
   .strip-ctrl{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
   .pr-row{display:flex;align-items:center;gap:8px;}
-  .striphint{flex-basis:100%;font-size:12px;color:var(--muted);}
+  .striphint{font-size:12px;color:var(--muted);}
+  @media (min-width:641px){
+    .striphint{flex:0 0 100%;}        /* own full-width line below the strip */
+  }
   @media (max-width:640px){
     .striprow{flex-direction:column;align-items:stretch;gap:12px;}
     .striphint{order:1;}              /* hint above the controls on mobile */
@@ -56,7 +59,7 @@
   .dur-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
   .tmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";padding: 0px 2px;}
 
-  .play{background:var(--accent);color:#fff;border:none;border-radius:10px;height:40px;width:108px;padding:0 16px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+  .play{background:var(--accent);color:#fff;border:none;border-radius:10px;height:40px;flex:0 0 118px;width:118px;min-width:118px;white-space:nowrap;padding:0 16px;font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
   .play:active{transform:translateY(1px);}
   .ghost{background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;height:40px;padding:0 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
   .ghost .ic{font-size:18px;line-height:1;}
@@ -557,7 +560,7 @@ function loadImg(src){
 
 async function downloadVideo(){
   if(playing || images.length<2) return;
-  dlBtn.disabled=true; const orig='↓ Download';
+  dlBtn.disabled=true; const orig='Download';
   setPillState('Rendering   0%');
   try{
     // load all images, find largest resolution
@@ -635,7 +638,7 @@ async function downloadVideo(){
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),2000);
 
-    setPillState('Saved ✓');
+    setPillState('Done ✓');
     setTimeout(()=>{ setPillState(orig); },1500);
   }catch(err){
     console.error(err);
