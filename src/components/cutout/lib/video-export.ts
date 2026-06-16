@@ -14,6 +14,7 @@ type ExportCompositeVideoOptions = {
 	sourceCanvas: HTMLCanvasElement;
 	outputCanvas: HTMLCanvasElement;
 	drawFrame: () => void;
+	onProgress?: (fraction: number) => void;
 };
 
 export async function exportCompositeVideo({
@@ -21,6 +22,7 @@ export async function exportCompositeVideo({
 	sourceCanvas,
 	outputCanvas,
 	drawFrame,
+	onProgress,
 }: ExportCompositeVideoOptions) {
 	const sourceBlob = await fetch(sourceUrl).then((response) => {
 		if (!response.ok) throw new Error("Could not read the selected video.");
@@ -54,9 +56,12 @@ export async function exportCompositeVideo({
 		output.addVideoTrack(canvasSource);
 		await output.start();
 
+		const totalDuration = onProgress ? await inputTrack.computeDuration() : 0;
+
 		const sink = new VideoSampleSink(inputTrack);
 		let firstTimestamp: number | null = null;
 
+		onProgress?.(0);
 		for await (const sample of sink.samples()) {
 			firstTimestamp ??= sample.timestamp;
 			const timestamp = Math.max(0, sample.timestamp - firstTimestamp);
@@ -68,7 +73,12 @@ export async function exportCompositeVideo({
 
 			drawFrame();
 			await canvasSource.add(timestamp, duration);
+
+			if (onProgress && totalDuration > 0) {
+				onProgress(Math.min(1, (timestamp + duration) / totalDuration));
+			}
 		}
+		onProgress?.(1);
 
 		canvasSource.close();
 		await output.finalize();

@@ -370,6 +370,10 @@ export default function CutoutPage() {
 	const [showGuides, setShowGuides] = useState(false);
 	const [copied, setCopied] = useState<"url" | "params" | null>(null);
 	const [isDownloading, setIsDownloading] = useState(false);
+	// Pill feedback: render progress (0–1) for video, and a brief "Done √" flash.
+	const [dlProgress, setDlProgress] = useState<number | null>(null);
+	const [dlDone, setDlDone] = useState(false);
+	const dlDoneTimer = useRef<number | null>(null);
 	const [stageWidth, setStageWidth] = useState(DEFAULT_ARTBOARD_SIZE.width);
 	const stageShellRef = useRef<HTMLDivElement>(null);
 	const artboardRef = useRef<HTMLDivElement>(null);
@@ -869,10 +873,19 @@ export default function CutoutPage() {
 		}
 	};
 
+	// Flash "Done ✓" on the pill, then revert after a beat.
+	const flashDone = () => {
+		setDlDone(true);
+		if (dlDoneTimer.current) window.clearTimeout(dlDoneTimer.current);
+		dlDoneTimer.current = window.setTimeout(() => setDlDone(false), 1500);
+	};
+
 	const downloadComposite = async () => {
 		const artboard = artboardRef.current;
 		if (!artboard || isDownloading) return;
 
+		if (dlDoneTimer.current) window.clearTimeout(dlDoneTimer.current);
+		setDlDone(false);
 		setIsDownloading(true);
 		try {
 			if (mediaKind === "video") {
@@ -915,11 +928,13 @@ export default function CutoutPage() {
 						outputCanvas.height,
 					);
 				};
+				setDlProgress(0);
 				const blob = await exportCompositeVideo({
 					sourceUrl: screenshotSrc,
 					sourceCanvas,
 					outputCanvas,
 					drawFrame: drawOutputFrame,
+					onProgress: setDlProgress,
 				});
 				const url = URL.createObjectURL(blob);
 				const link = document.createElement("a");
@@ -927,6 +942,7 @@ export default function CutoutPage() {
 				link.href = url;
 				link.click();
 				window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+				flashDone();
 				return;
 			}
 
@@ -958,8 +974,10 @@ export default function CutoutPage() {
 			link.download = "flint-hand-mockup.png";
 			link.href = outputCanvas.toDataURL("image/png");
 			link.click();
+			flashDone();
 		} finally {
 			setIsDownloading(false);
+			setDlProgress(null);
 		}
 	};
 
@@ -982,19 +1000,21 @@ export default function CutoutPage() {
 
 	return (
 		<div className="relative isolate min-h-screen bg-[#11100f] px-4 pb-5 text-[#eee9e2] sm:px-6 lg:px-8 xl:px-12">
-			{/* Header backdrop — gradient + blur that sits BEHIND the panel (z-0) so
-				cards scroll up over it for an immersive feel. Its height matches the
-				header bar and is cancelled by a negative bottom margin so it overlaps
-				the bar below instead of adding extra flow space. */}
+			{/* Header backdrop — gradient + blur layered IN FRONT of the panel (z-20,
+				below the z-30 header text). Panel cards scroll underneath it and get
+				faded + blurred toward the header, so the sticky title/Home keep good
+				contrast. Its height matches the header bar and is cancelled by a
+				negative bottom margin so it overlaps the bar below instead of adding
+				extra flow space. */}
 			<div
 				aria-hidden="true"
-				className="pointer-events-none sticky top-0 z-0 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
+				className="pointer-events-none sticky top-0 z-20 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
 				style={{
 					height: "var(--cutout-header-h, 76px)",
 					marginBottom: "calc(-1 * var(--cutout-header-h, 76px))",
 					background:
 						"linear-gradient(to bottom, #11100f 0%, #11100f 45%, rgba(17,16,15,0.72) 75%, rgba(17,16,15,0) 100%)",
-					WebkitMaskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
+					WebkitMaskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
 					maskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
 				}}
 			/>
@@ -1005,7 +1025,7 @@ export default function CutoutPage() {
 			<div
 				ref={headerRef}
 				role="banner"
-				className="pointer-events-none sticky top-0 z-30 flex items-start justify-between gap-4 pt-9 pb-9 xl:mx-auto xl:max-w-[1720px] xl:pt-6 xl:pb-6"
+				className="pointer-events-none sticky top-0 z-30 flex items-start justify-between gap-4 pt-6 pb-4 xl:mx-auto xl:max-w-[1200px] xl:pt-6 xl:pb-6"
 			>
 				<div className="pointer-events-auto">
 					<h1 className="text-2xl font-semibold tracking-[-0.025em]">Cutout Fixer</h1>
@@ -1023,7 +1043,7 @@ export default function CutoutPage() {
 				</a>
 			</div>
 
-			<div className="relative z-10 mx-auto grid max-w-[1720px] items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+			<div className="relative z-10 mx-auto grid max-w-[1200px] items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
 				<div className="contents xl:flex xl:flex-col xl:gap-5 xl:sticky xl:top-[var(--cutout-header-h,0px)] xl:self-start">
 					<section className="sticky top-[var(--cutout-header-h,0px)] z-20 overflow-hidden rounded-[18px] border border-white/10 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.45)] xl:static xl:z-auto">
 						<div
@@ -1332,6 +1352,22 @@ export default function CutoutPage() {
 									</div>
 								)}
 							</div>
+
+							{/* Download pill, bottom-right of the preview (mirrors the Scrubly tool). */}
+							<button
+								type="button"
+								onClick={downloadComposite}
+								disabled={isDownloading}
+								className="absolute bottom-[9px] right-[9px] z-30 inline-flex h-7 w-[118px] items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-black/60 px-2 text-[11px] font-semibold tabular-nums text-white backdrop-blur-sm transition-colors hover:bg-black/75 disabled:cursor-default"
+							>
+								{dlDone
+									? "Done ✓"
+									: mediaKind === "video"
+										? isDownloading
+											? `Rendering ${Math.round((dlProgress ?? 0) * 100)}%`
+											: "Download MP4"
+										: "Download PNG"}
+							</button>
 						</div>
 					</section>
 
@@ -1623,20 +1659,6 @@ export default function CutoutPage() {
 					</div>
 
 					<div className="mt-5 grid grid-cols-2 gap-2">
-						<button
-							type="button"
-							onClick={downloadComposite}
-							disabled={isDownloading}
-							className="col-span-2 rounded-xl bg-[#ffb43e] px-3 py-2.5 text-sm font-semibold text-black hover:bg-[#ffc35f] disabled:cursor-wait disabled:opacity-60"
-						>
-							{isDownloading
-								? mediaKind === "video"
-									? "Processing video…"
-									: "Rendering…"
-								: mediaKind === "video"
-									? "Download MP4"
-									: "Download PNG"}
-						</button>
 						<button
 							type="button"
 							onClick={copyUrl}
