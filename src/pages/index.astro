@@ -37,18 +37,18 @@ const allSnowball = (await getCollection("snowball"))
       <section class="animate space-y-6">
         <div>
           <h5 class="font-semibold text-black dark:text-white">
-            Tools
+              Personal Software
           </h5>
-          <p class="text-sm text-black/80 dark:text-white/80 mt-1">Small things I built to build other things.</p>
+          <p class="text-sm text-black/80 dark:text-white/80 mt-1">I build things that build other things.</p>
         </div>
-        <ul class="flex flex-wrap gap-4">
+        <ul class="flex sm:flex-wrap gap-4">
           {[
-            { title: "Cutout Fixer", href: "/tools/cutout-fixer", description: "Clean up rough edges on transparent PNG cutouts." },
+            { title: "Cutout Fixer", href: "/tools/cutout-fixer", description: "Add image into other image's cutout." },
             { title: "Scrubly Transition", href: "/tools/scrubly", description: "Scroll-scrub transitions for the web." },
           ]
             .sort((a, b) => a.title.localeCompare(b.title))
             .map(tool => (
-              <li class="min-w-[16rem] flex-1">
+              <li class="w-[190px]">
                 <a
                   href={tool.href}
                   class="group flex h-full flex-col rounded-xl border border-black/15 dark:border-white/20 p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
