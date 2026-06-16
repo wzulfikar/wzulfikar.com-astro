@@ -1018,7 +1018,7 @@ export default function CutoutPage() {
 	// Usage card is collapsed by default on mobile to save vertical space; it is
 	// always shown on desktop (xl) regardless of this state.
 	const [usageOpen, setUsageOpen] = useState(false);
-	const headerRef = useRef<HTMLElement>(null);
+	const headerRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		const header = headerRef.current;
 		if (!header) return;
@@ -1032,30 +1032,32 @@ export default function CutoutPage() {
 
 	return (
 		<div className="relative isolate min-h-screen bg-[#11100f] px-4 pb-5 text-[#eee9e2] sm:px-6 lg:px-8 xl:px-12">
-			{/* Header backdrop — gradient + blur that sits BEHIND the panel (z-0) so
-				cards scroll up over it for an immersive feel. Kept behind the content:
-				a blurred layer painted in front (z-20) over the scrollable grid swallows
-				touch scrolling on mobile, so the panel stops scrolling. Its height
-				matches the header bar and is cancelled by a negative bottom margin so it
-				overlaps the bar below instead of adding extra flow space. */}
+			{/* Header backdrop — gradient + blur layered IN FRONT of the panel (z-20,
+				below the z-30 header text). Panel cards scroll underneath it and get
+				faded + blurred toward the header, so the sticky title/Home keep good
+				contrast. pointer-events-none so it never intercepts scroll/clicks. Its
+				height matches the header bar and is cancelled by a negative bottom margin
+				so it overlaps the bar below instead of adding extra flow space. */}
 			<div
 				aria-hidden="true"
-				className="pointer-events-none sticky top-0 z-0 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
+				className="pointer-events-none sticky top-0 z-20 -mx-4 backdrop-blur-md sm:-mx-6 lg:-mx-8 xl:-mx-12"
 				style={{
 					height: "var(--cutout-header-h, 76px)",
 					marginBottom: "calc(-1 * var(--cutout-header-h, 76px))",
 					background:
 						"linear-gradient(to bottom, #11100f 0%, #11100f 45%, rgba(17,16,15,0.72) 75%, rgba(17,16,15,0) 100%)",
 					WebkitMaskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
-					maskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
+					maskImage: "linear-gradient(to bottom, #000 75%, transparent 100%)",
 				}}
 			/>
 
 			{/* Title + Home — on TOP of the panel (z-30) but transparent, so panel
 				cards scroll through the gaps; only the text and Home pill stay above.
 				Empty areas pass pointer events through to the cards behind. */}
-			<header
+			{/* biome-ignore lint/a11y/useSemanticElements: a global `header { position: fixed }` rule in global.css is meant for the site nav; using a real <header> here inherits it and breaks this page's sticky layout */}
+			<div
 				ref={headerRef}
+				role="banner"
 				className="pointer-events-none sticky top-0 z-30 flex items-start justify-between gap-4 pt-6 pb-4 xl:mx-auto xl:max-w-[1200px] xl:pt-6 xl:pb-6"
 			>
 				<div className="pointer-events-auto">
@@ -1072,7 +1074,7 @@ export default function CutoutPage() {
 					<HomeIcon className="h-4 w-4" />
 					Home
 				</a>
-			</header>
+			</div>
 
 			<div className="relative z-10 mx-auto grid max-w-[1200px] items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
 				<div className="contents xl:flex xl:flex-col xl:gap-5 xl:sticky xl:top-[var(--cutout-header-h,0px)] xl:self-start">
@@ -1398,13 +1400,23 @@ export default function CutoutPage() {
 								disabled={isDownloading}
 								className="absolute bottom-[9px] right-[9px] z-30 inline-flex h-7 w-[118px] items-center justify-center overflow-hidden whitespace-nowrap rounded-full bg-black/60 px-2 text-[11px] font-semibold tabular-nums text-white backdrop-blur-sm transition-colors hover:bg-black/75 disabled:cursor-default"
 							>
-								{dlDone
-									? "Done ✓"
-									: mediaKind === "video"
-										? isDownloading
-											? `Rendering ${Math.round((dlProgress ?? 0) * 100)}%`
-											: "Download MP4"
-										: "Download PNG"}
+								{dlDone ? (
+									"Done ✓"
+								) : mediaKind === "video" ? (
+									isDownloading ? (
+										<>
+											Rendering{" "}
+											<span className="inline-block w-[3ch] text-right">
+												{Math.round((dlProgress ?? 0) * 100)}
+											</span>
+											%
+										</>
+									) : (
+										"Download MP4"
+									)
+								) : (
+									"Download PNG"
+								)}
 							</button>
 						</div>
 					</section>
