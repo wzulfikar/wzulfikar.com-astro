@@ -1045,9 +1045,9 @@ export default function CutoutPage() {
 					height: "var(--cutout-header-h, 76px)",
 					marginBottom: "calc(-1 * var(--cutout-header-h, 76px))",
 					background:
-						"linear-gradient(to bottom, #11100f 0%, #11100f 45%, rgba(17,16,15,0.72) 75%, rgba(17,16,15,0) 100%)",
-					WebkitMaskImage: "linear-gradient(to bottom, #000 80%, transparent 100%)",
-					maskImage: "linear-gradient(to bottom, #000 75%, transparent 100%)",
+						"linear-gradient(to bottom, #11100f 0%, #11100f 45%, rgba(17,16,15,0.72) 62%, rgba(17,16,15,0) 100%)",
+					WebkitMaskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
+					maskImage: "linear-gradient(to bottom, #000 62%, transparent 100%)",
 				}}
 			/>
 

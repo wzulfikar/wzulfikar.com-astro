@@ -43,15 +43,15 @@ const allSnowball = (await getCollection("snowball"))
         </div>
         <ul class="flex sm:flex-wrap gap-4">
           {[
-            { title: "Cutout Fixer", href: "/tools/cutout-fixer", description: "Add image into other image's cutout." },
-            { title: "Scrubly Transition", href: "/tools/scrubly", description: "Scroll-scrub transitions for the web." },
+            { title: "Cutout Fixer", href: "/tools/cutout-fixer", description: "Add image into other image's cutout.", gradient: "bg-gradient-to-br from-rose-500/25 via-orange-400/15 to-amber-300/20 dark:from-rose-500/30 dark:via-orange-400/20 dark:to-amber-300/15" },
+            { title: "Scrubly Transition", href: "/tools/scrubly", description: "Scroll-scrub transitions for the web.", gradient: "bg-gradient-to-tr from-sky-500/25 via-indigo-400/15 to-violet-400/20 dark:from-sky-500/30 dark:via-indigo-400/20 dark:to-violet-400/15" },
           ]
             .sort((a, b) => a.title.localeCompare(b.title))
             .map(tool => (
               <li class="w-[190px]">
                 <a
                   href={tool.href}
-                  class="group flex h-full flex-col rounded-xl border border-black/15 dark:border-white/20 p-4 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                  class={`group flex h-full flex-col rounded-xl border border-black/15 dark:border-white/20 p-4 transition-opacity ${tool.gradient} opacity-90 hover:opacity-100`}
                 >
                   <span class="font-semibold text-black dark:text-white">{tool.title}</span>
                   <span class="mt-1 text-sm text-black/70 dark:text-white/70">{tool.description}</span>
